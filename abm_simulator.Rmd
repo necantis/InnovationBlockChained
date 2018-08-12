@@ -1,0 +1,135 @@
+---
+title: "simulation"
+author: "Necantis"
+date: "2018-08-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Testing a [tutorial on ABM](https://marcosmolla.wordpress.com/2015/07/16/an-introduction-to-agent-based-modelling-in-r/)
+
+```{r simulation1}
+#Function to reset the results
+setup <- function() {
+  return(data.frame(
+  id = 1:2,
+  strategy = NA,
+  num_wins = 0
+  ))
+}
+
+#Function to set each agent's Strategy
+chooseStrategy <- function(ind){
+  strats <- sample(x = 1:3, size = nrow(ind)) # 1:Paper, 2:Scissors, 3:Rock
+  ind$strategy <- strats
+  return(ind)
+}
+
+# Function to play strategy
+playStrategy <- function(ind) {
+  if (ind$strategy[1] == ind$strategy[2]) { # Do nothing if they have the same strategy
+  } else{
+  #in the case that one chose Rock and the other paper:
+  if (any(ind$strategy == 3) && any(ind$strategy == 1)) {
+  tmp <- ind[ind$strategy == 1, "id"]
+  ind[tmp, "num_wins"] <- ind[tmp, "num_wins"] + 1
+  } else{
+  #for the two other cases, the better weapon wins:
+  tmp <- which(ind[, "strategy"] == max(ind[, "strategy"]))
+  ind[tmp, "num_wins"] <- ind[tmp, "num_wins"] + 1
+  }
+  }
+  return(ind)
+}
+
+#Running the simulation
+rounds <- 1000 # Set 1k rounds
+indDF <- setup() # Initiate vector for results
+dat <- matrix(NA, rounds, 2)
+for (i in 1:rounds) {
+  indDF <- chooseStrategy(indDF)
+  indDF <- playStrategy(indDF)
+  dat[i,] <- indDF$num_wins
+  i <- i + 1
+}
+
+#Visualize results
+plot(
+  dat[, 1],
+  type = 'l',
+  col = '#EA2E49',
+  lwd = 3,
+  xlab = 'time',
+  ylab = 'number of rounds won'
+)
+lines(dat[, 2], col = '#77C4D3', lwd = 3)
+
+```
+
+
+```{r}
+chooseStrategy2 <- function(ind){
+strats <- sample(x=1:3, size=1) # 1:Paper, 2:Scissors, 3:Rock
+ind$strategy[2] <- strats
+return(ind)
+}
+
+rounds <- 1000
+repetitions <- 100
+dat <- matrix(NA, rounds, 2)
+res2 <- c()
+for(j in 1:repetitions){
+indDF <- setup()
+indDF[1,"strategy"] <- sample(1:3,1)
+for(i in 1:rounds){
+indDF <- chooseStrategy2(indDF)
+indDF <- playStrategy(indDF)
+dat[i,] <- indDF$num_wins
+i <- i+1
+}
+res2 <- c(res2, which(indDF[,"num_wins"]==max(indDF[,"num_wins"])))
+j <- j+1
+}
+ 
+plot(dat[,1], type='l', col='blue', lwd=3, xlab='time', ylab='number of rounds won')
+lines(dat[,2], col='red', lwd=3)
+ 
+# for comparison let's calculate the winning vector for both players switch strategies:
+ 
+res1 <- c()
+for(j in 1:repetitions){
+indDF <- setup()
+for(i in 1:rounds){
+indDF <- chooseStrategy(indDF)
+indDF <- playStrategy(indDF)
+dat[i,] <- indDF$num_wins
+i <- i+1
+}
+res1 <- c(res1, which(indDF[,"num_wins"]==max(indDF[,"num_wins"])))
+j <- j+1
+}
+ 
+# and the winner is:
+t.test(res1,res2)
+ 
+##
+## Welch Two Sample t-test
+##
+## data: res1 and res2
+## t = 0.5579, df = 202, p-value = 0.5775
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+## -0.09938468 0.17781605
+## sample estimates:
+## mean of x mean of y
+## 1.529412 1.490196
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

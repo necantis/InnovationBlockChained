@@ -1,37 +1,57 @@
-## Welcome to GitHub Pages
+# WebScraping
 
-You can use the [editor on GitHub](https://github.com/necantis/InnovationBlockChained/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Agent-based simulation to assess different rules for challenges in open innovation 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Getting Started
 
-### Markdown
+This subsection needs to be written
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Prerequisites
 
-```markdown
-Syntax highlighted code block
+This subsection needs to be written
 
-# Header 1
-## Header 2
-### Header 3
+### Installing
 
-- Bulleted
-- List
+To obtain the code, you might want to create a new project in R Studio with version control and copy the URL of this folder.
 
-1. Numbered
-2. List
+## Running the tests
 
-**Bold** and _Italic_ and `Code` text
+This subsection needs to be written
 
-[Link](url) and ![Image](src)
+### Test 1 procedure
+
+```
+Example
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## Deployment
 
-### Jekyll Themes
+This subsection needs to be written
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/necantis/InnovationBlockChained/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+## Built With (Main R libraries)
 
-### Support or Contact
+This subsection needs to be written
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+## Contributing
+
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We currently do not use a special solution for versioning. 
+
+## Authors
+
+* **Necantis** - *Initial work* - [Necantis](https://github.com/necantis)
+
+See also the list of [contributors](https://github.com/necantis/webScraping/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the GPL 3 License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Hat tip to anyone whose code was used
+* Inspiration for [tidy data](http://r4ds.had.co.nz/relational-data.html)
+* etc

@@ -1,36 +1,32 @@
-# WebScraping
+# Innovation BlockChained
 
 Agent-based simulation to assess different rules for challenges in open innovation 
 
 ## Getting Started
 
-This subsection needs to be written
+To see the model description and the test results [click here](https://github.com/necantis/InnovationBlockChained/blob/master/abm_simulator.html)
 
 ### Prerequisites
 
-This subsection needs to be written
+To see the HTML page you need a web browser. 
 
 ### Installing
 
-To obtain the code, you might want to create a new project in R Studio with version control and copy the URL of this folder.
+If you want to read the [R Markdown file](https://github.com/necantis/InnovationBlockChained/blob/master/abm_simulator.Rmd), you might want to use R Studio
 
 ## Running the tests
 
-This subsection needs to be written
+The current tests are comparing different hypotheses:
 
-### Test 1 procedure
+### H0: An idea challenge with one single winner will outperform a combination of chainstorming and cheatstorming
 
-```
-Example
-```
-
-## Deployment
-
-This subsection needs to be written
+[] Create a simple idea challenge and assess the value of the idea and the ideas to assess to choose the one retained.
+[] Create another idea challenge and assess the value of the sum of ideas and the number of ideas to assess to choose the ones retained.
 
 ## Built With (Main R libraries)
 
-This subsection needs to be written
+* lpSolve to choose the ideas to pool
+* tidyverse to work with Tidy data
 
 ## Contributing
 
@@ -43,8 +39,6 @@ We currently do not use a special solution for versioning.
 ## Authors
 
 * **Necantis** - *Initial work* - [Necantis](https://github.com/necantis)
-
-See also the list of [contributors](https://github.com/necantis/webScraping/contributors) who participated in this project.
 
 ## License
 

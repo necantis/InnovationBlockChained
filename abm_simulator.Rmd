@@ -250,7 +250,6 @@ performance$winners # Winners
 performance$quality # Sum of the pooled ideas
 performance$prize # Cost of prizes 
 
-
 ```
 
 

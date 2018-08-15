@@ -129,130 +129,408 @@ $(document).ready(function () {
 </div>
 
 
-<div id="part-1-preliminary-tests" class="section level1">
-<h1>Part 1: Preliminary tests</h1>
-<p>Testing a <a href="https://marcosmolla.wordpress.com/2015/07/16/an-introduction-to-agent-based-modelling-in-r/">tutorial on ABM</a></p>
-<pre class="r"><code>#Function to reset the results
-setup &lt;- function() {
-  return(data.frame(
-  id = 1:2,
-  strategy = NA,
-  num_wins = 0
-  ))
-}
+<div id="theoretical-model-version-01" class="section level2">
+<h2>Theoretical model, version 01</h2>
+<p>In this initial model, we have 3 phases<br />
+# Phase 01: Idea generation We assign a random number to each agent</p>
+<pre class="r"><code>target &lt;- 1e9 # we set the target at 1'000'000'000
+totAgents &lt;- 1e3
+clusters &lt;- 10
 
-#Function to set each agent's Strategy
-chooseStrategy &lt;- function(ind){
-  strats &lt;- sample(x = 1:3, size = nrow(ind)) # 1:Paper, 2:Scissors, 3:Rock
-  ind$strategy &lt;- strats
-  return(ind)
-}
+set.seed(1) #Setting a seed to allow comparable results
+ideas &lt;- runif(totAgents, min=0, max=target) # Generating random numbers in a uniform distribution</code></pre>
+<p>We cluster the results</p>
+<pre class="r"><code>ideaClusters &lt;- 1+as.integer(ideas/(target/clusters)) #Extracting the cluster by dividing each number to the number of clusters
+agentsId &lt;- 1:totAgents # Adding a UID
+agentsReward_01 &lt;- rep(0,totAgents) # A variable associated to phase 01
+agentsReward_02 &lt;- rep(0,totAgents) # A variable associated to phase 02
+agents &lt;- data.frame(agentsId, ideas, ideaClusters,agentsReward_01,agentsReward_02) #Creating a dataframe with ID, value and cluster
 
-# Function to play strategy
-playStrategy &lt;- function(ind) {
-  if (ind$strategy[1] == ind$strategy[2]) { # Do nothing if they have the same strategy
-  } else{
-  #in the case that one chose Rock and the other paper:
-  if (any(ind$strategy == 3) &amp;&amp; any(ind$strategy == 1)) {
-  tmp &lt;- ind[ind$strategy == 1, &quot;id&quot;]
-  ind[tmp, &quot;num_wins&quot;] &lt;- ind[tmp, &quot;num_wins&quot;] + 1
-  } else{
-  #for the two other cases, the better weapon wins:
-  tmp &lt;- which(ind[, &quot;strategy&quot;] == max(ind[, &quot;strategy&quot;]))
-  ind[tmp, &quot;num_wins&quot;] &lt;- ind[tmp, &quot;num_wins&quot;] + 1
+# hist(agents$ideas)
+# hist(agents$ideaClusters)</code></pre>
+<p>We assign prizes</p>
+<pre class="r"><code>idClusters &lt;- seq(1:clusters)
+idWinners &lt;- rep(NA,clusters)
+valueWinners &lt;- rep(NA,clusters)
+listWinners &lt;- data.frame(idClusters,idWinners, valueWinners) #Creating a dataframe with Cluster ID, Winner ID and value
+
+for(i in 1:totAgents){
+  j &lt;- agents[i,3] # Check the cluster of the agent
+  if(is.na(listWinners[j,2])){ # If the cluster of the agent does not have a winner (it's value is NA) ...
+    listWinners[j,2] &lt;-agents[i,1] # ... use the agent's ID
+    listWinners[j,3] &lt;-agents[i,2] # ... use the agent's value 
+    agents[i,4] &lt;- 1 # rewarding the selected agent
   }
+}
+
+listWinners</code></pre>
+<pre><code>##    idClusters idWinners valueWinners
+## 1           1        10     61786270
+## 2           2        12    176556753
+## 3           3         1    265508663
+## 4           4         2    372123900
+## 5           5        16    497699242
+## 6           6         3    572853363
+## 7           7         8    660797792
+## 8           8        15    769841420
+## 9           9         6    898389685
+## 10         10         4    908207790</code></pre>
+</div>
+<div id="phase-02-idea-pooling" class="section level1">
+<h1>Phase 02: Idea pooling</h1>
+<p>We use <a href="https://www.kdnuggets.com/2018/05/optimization-using-r.html">lpSOlve</a> to define the objective function</p>
+<pre class="r"><code>library(lpSolve)
+objective.in &lt;- listWinners[,3] # Pooling the retained ideas by looking for the best combination</code></pre>
+<p>We define the constraints of the function</p>
+<pre class="r"><code>mat &lt;- matrix(listWinners[,3], nrow=1, byrow=TRUE) # The sum of the pooled ideas ...
+dir &lt;- &quot;&lt;=&quot; # ... should be below ...
+rhs &lt;- target # ... the target</code></pre>
+<p>We solve the Linear programming function and we reward the owners of the pooled ideas</p>
+<pre class="r"><code>optimum &lt;-lp(direction=&quot;max&quot;,  objective.in, mat, dir, rhs, all.bin = TRUE) # Which is the best combination of pooled ideas?
+optimum$solution # The selected ideas</code></pre>
+<pre><code>##  [1] 1 0 1 0 0 0 1 0 0 0</code></pre>
+<pre class="r"><code>for(i in 1:clusters){
+  if(optimum$solution[i] &gt;0){ # if an idea is pooled ...
+    j &lt;- listWinners[i,2] # ... select the owner of the pooled idea
+    agents[j,5] &lt;- 1 # ... and reward the agent another time
   }
-  return(ind)
-}
+}</code></pre>
+</div>
+<div id="phase-03-analyze-results" class="section level1">
+<h1>Phase 03: Analyze results</h1>
+<p><a href="http://r4ds.had.co.nz/transform.html#filter-rows-with-filter">Filter</a> the winners</p>
+<pre class="r"><code>totWinners &lt;- filter(agents, agentsReward_01 &gt;0) # This could reduce computational effort</code></pre>
+<p><a href="http://r4ds.had.co.nz/tidy-data.html#spreading-and-gathering">Gather</a> the two last columns of agents into one</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## Warning: package 'tidyverse' was built under R version 3.4.4</code></pre>
+<pre><code>## -- Attaching packages ---------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.0.0     v purrr   0.2.5
+## v tibble  1.4.2     v dplyr   0.7.6
+## v tidyr   0.8.1     v stringr 1.3.1
+## v readr   1.1.1     v forcats 0.3.0</code></pre>
+<pre><code>## Warning: package 'ggplot2' was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package 'tibble' was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package 'tidyr' was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package 'readr' was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package 'purrr' was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package 'dplyr' was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package 'stringr' was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package 'forcats' was built under R version 3.4.4</code></pre>
+<pre><code>## -- Conflicts ------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>agentsRewards &lt;- agents %&gt;% 
+  gather('agentsReward_01', 'agentsReward_02', key = &quot;Phase&quot;, value = &quot;Rewards&quot;)</code></pre>
+<p><a href="http://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise">Summarize</a> by agent</p>
+<pre class="r"><code>summarise(group_by(agentsRewards, agentsId), Rewards = sum(Rewards, na.rm = TRUE))</code></pre>
+<pre><code>## # A tibble: 1,000 x 2
+##    agentsId Rewards
+##       &lt;int&gt;   &lt;dbl&gt;
+##  1        1       2
+##  2        2       1
+##  3        3       1
+##  4        4       1
+##  5        5       0
+##  6        6       1
+##  7        7       0
+##  8        8       2
+##  9        9       0
+## 10       10       2
+## # ... with 990 more rows</code></pre>
+<p>Check the reminder for another idea challenge</p>
+<pre class="r"><code>remainder &lt;- target - sum(agents$ideas*agents$agentsReward_02) #Comparing the initial target with the sum of the pooled ideas</code></pre>
+<div id="theoretical-model-version-02" class="section level2">
+<h2>Theoretical model, version 02</h2>
+<p>Setting up a function to generate ideas</p>
+<pre class="r"><code>phase00 &lt;- function(target, totAgents,totIdeas,clusters){
+  
+  set.seed(1) #Setting a seed to a fix number to allow comparable results
+    agentsId &lt;- as.integer(rnorm(totIdeas, totAgents/2, totAgents/10)) # Assigning an owner to each idea (this allows multiple ideas to one owner)
+    
+  set.seed(1) #Setting a seed again
+    idea &lt;- as.integer(runif(totIdeas, min = 0, max = target)) # Generating random numbers in a uniform distribution
+  
+  ideaClusters &lt;- 1+as.integer(idea/(target/clusters)) #Extracting the cluster by dividing each number to the number of clusters
+  agentsReward_01 &lt;- rep(0,totIdeas) # A variable associated to phase 01
+  agentsReward_02 &lt;- rep(0,totIdeas) # A variable associated to phase 02
+  ideas &lt;- data.frame(agentsId, idea, ideaClusters,agentsReward_01,agentsReward_02) #Creating a dataframe with ID, value and cluster
 
-#Running the simulation
-rounds &lt;- 1000 # Set 1k rounds
-indDF &lt;- setup() # Initiate vector for results
-dat &lt;- matrix(NA, rounds, 2)
-for (i in 1:rounds) {
-  indDF &lt;- chooseStrategy(indDF)
-  indDF &lt;- playStrategy(indDF)
-  dat[i,] &lt;- indDF$num_wins
-  i &lt;- i + 1
-}
+  return(ideas)
+}</code></pre>
+<p>Setting up a function to select ideas</p>
+<pre class="r"><code>phase01 &lt;- function(clusters, ideas){
 
-#Visualize results
-plot(
-  dat[, 1],
-  type = 'l',
-  col = '#EA2E49',
-  lwd = 3,
-  xlab = 'time',
-  ylab = 'number of rounds won'
-)
-lines(dat[, 2], col = '#77C4D3', lwd = 3)</code></pre>
-<p><img src="data:image/png;base64,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XDJ8mssVX59U0wvolcEkG14voJkH8/m3W39BaNLBfD0Ln3wwPhPpOTJ8nuCl/icifQU06cclfukHNPVgXs9PXBIP5mw3923SwZwtRvKpnAC5CShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgJLG3/+n+99//nj5179rHwrsCShZvL587/4hoLRDQEni/UVAaY2AksRHQKEdAkoSAkp7BJQkBJT2CCgp7PK59+PjHujfv7/8+p/t2+6Xfvmz+4K3w/97+vU/br4ezEFASeFqQP//H4df/N79bO/b4av/+u345aabeCoBJYWrAf1fx1/85b+OJT2ec372U0F5LgElibNlTPtzzs8f7H/UdfPb4SsO1/XvX+ek8AwCShJXAvrrf47/x9ePuh+8f/y8+6LDHVJ4CgEliSsBPcwRfVVy96Pu/3r9qqape55KQEniMqDH+5vnPzrMzx/srupdw/M8AkoSYwLa9xlTmJ2AksTggPbm4AWU5xJQkhgTUNGkDAEliTGX8FZ/UoaAksTggHbLQD3DSRECShKDA9o9Fv9xCmoZE08loCTxsTz+cUD30/D7c9DXFwvpeSYBJYnD5PqPAQH9fHD+sNEIPI2AksQ/fxx6OCCgvZVM+skzCShZ7Av6bVBAj9uDegqJJxNQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgCABBQgSUIAgAQUIElCAIAEFCBJQgKD/BjcCh2AaJp1vAAAAAElFTkSuQmCC" width="672" /></p>
-<pre class="r"><code>chooseStrategy2 &lt;- function(ind){
-strats &lt;- sample(x=1:3, size=1) # 1:Paper, 2:Scissors, 3:Rock
-ind$strategy[2] &lt;- strats
-return(ind)
-}
+  #Creating a dataframe with Cluster ID, Winner ID and value
+  idClusters &lt;- seq(1:clusters)
+  idWinners &lt;- rep(NA, clusters)
+  valueWinners &lt;- rep(NA, clusters)
+  listWinners &lt;-  data.frame(idClusters, idWinners, valueWinners) 
+  
+  #Reward the owners of the selected ideas
+  lenIdeas &lt;- dim(ideas)[1]
+  for (i in 1:lenIdeas) {
+    j &lt;- ideas[i, 3] # Check the cluster of the idea
+    if (is.na(listWinners[j, 2])) {
+    # If the cluster of the agent does not have a winner (it's value is NA) ...
+    listWinners[j, 2] &lt;- ideas[i, 1] # ... use the agent's ID
+    listWinners[j, 3] &lt;- ideas[i, 2] # ... use the idea's value
+    ideas[i, 4] &lt;- 1 +ideas[i, 4] # rewarding the selected agent by increasing the reward to 1 (taking into account multiple challenges)
+    }
+  }
+  return(ideas)
+}</code></pre>
+<p>Setting up a function to pool ideas</p>
+<pre class="r"><code>phase02 &lt;- function (selectedIdeas, target) {
 
-rounds &lt;- 1000
-repetitions &lt;- 100
-dat &lt;- matrix(NA, rounds, 2)
-res2 &lt;- c()
-for(j in 1:repetitions){
-indDF &lt;- setup()
-indDF[1,&quot;strategy&quot;] &lt;- sample(1:3,1)
-for(i in 1:rounds){
-indDF &lt;- chooseStrategy2(indDF)
-indDF &lt;- playStrategy(indDF)
-dat[i,] &lt;- indDF$num_wins
-i &lt;- i+1
-}
-res2 &lt;- c(res2, which(indDF[,&quot;num_wins&quot;]==max(indDF[,&quot;num_wins&quot;])))
-j &lt;- j+1
-}
- 
-plot(dat[,1], type='l', col='blue', lwd=3, xlab='time', ylab='number of rounds won')
-lines(dat[,2], col='red', lwd=3)</code></pre>
-<p><img src="data:image/png;base64,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" width="672" /></p>
-<pre class="r"><code># for comparison let's calculate the winning vector for both players switch strategies:
- 
-res1 &lt;- c()
-for(j in 1:repetitions){
-indDF &lt;- setup()
-for(i in 1:rounds){
-indDF &lt;- chooseStrategy(indDF)
-indDF &lt;- playStrategy(indDF)
-dat[i,] &lt;- indDF$num_wins
-i &lt;- i+1
-}
-res1 &lt;- c(res1, which(indDF[,&quot;num_wins&quot;]==max(indDF[,&quot;num_wins&quot;])))
-j &lt;- j+1
-}
- 
-# and the winner is:
-t.test(res1,res2)</code></pre>
-<pre><code>## 
-##  Welch Two Sample t-test
-## 
-## data:  res1 and res2
-## t = 0.20753, df = 202.82, p-value = 0.8358
-## alternative hypothesis: true difference in means is not equal to 0
-## 95 percent confidence interval:
-##  -0.1238215  0.1529532
-## sample estimates:
-## mean of x mean of y 
-##  1.509615  1.495050</code></pre>
-<pre class="r"><code>##
-## Welch Two Sample t-test
-##
-## data: res1 and res2
-## t = 0.5579, df = 202, p-value = 0.5775
-## alternative hypothesis: true difference in means is not equal to 0
-## 95 percent confidence interval:
-## -0.09938468 0.17781605
-## sample estimates:
-## mean of x mean of y
-## 1.529412 1.490196</code></pre>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+  library(lpSolve)
+  ideas &lt;- selectedIdeas
+  listWinners &lt;- filter(ideas, agentsReward_01 &gt;0) #Filtering the list of winners before performing a left join with the pooled ideas
+
+  #Linear programming
+  objective.in &lt;- listWinners[, 2] # Trying to pool the retained ideas by looking for the best combination of coefficients
+  mat &lt;-  matrix(listWinners[, 2], nrow = 1, byrow = TRUE) # The sum of the pooled ideas ...
+  dir &lt;- &quot;&lt;=&quot; # ... should be below ...
+  rhs &lt;- target # ... the target
+  optimum &lt;-  lp(direction = &quot;max&quot;, objective.in,  mat,  dir,  rhs,  all.bin = TRUE) # Which is the best combination of pooled ideas?
+  optimum$solution # The selected ideas
+  
+  listWinners[,5] &lt;- optimum$solution #Assign prizes
+  polledIdeas &lt;- ideas %&gt;%
+  left_join(listWinners, by = c(&quot;agentsId&quot;,&quot;idea&quot;,&quot;ideaClusters&quot;,&quot;agentsReward_01&quot;)) #Left join
+  agentsReward_02 &lt;- polledIdeas$agentsReward_02.x+ polledIdeas$agentsReward_02.y # Taking into account previous idea challenges
+  polledIdeas &lt;- data.frame(polledIdeas,agentsReward_02) #add the new column
+
+  polledIdeas[5] &lt;- NULL # Removing the redundant columns
+  polledIdeas[5] &lt;- NULL # Removing the redundant columns
+
+  return(polledIdeas)
+}</code></pre>
+<p>Setting up a function to summarize the rewards</p>
+<pre class="r"><code>phase03 &lt;- function(ideas, target){
+  library(tidyverse)
+  agentsRewards &lt;- ideas %&gt;% 
+    gather('agentsReward_01', 'agentsReward_02', key = &quot;Phase&quot;, value = &quot;Rewards&quot;)
+
+  winners &lt;- summarise(group_by(agentsRewards, agentsId, idea), Rewards = sum(Rewards, na.rm = TRUE))
+    winners &lt;- arrange(winners, idea) #Sorting ideas
+    problemSolved &lt;- sum(filter(winners, Rewards &gt; 1)[, 2])
+    
+    #Print results for comparison
+    print(&quot;filter(winners, Rewards &gt;0)&quot;)
+      print(filter(winners, Rewards &gt; 0)) # Test: selected ideas
+    print(&quot;Mean(winners$Rewards)&quot;)
+      print(mean(winners$Rewards))
+    print(&quot;Problem Solved&quot;)
+      print(problemSolved)
+    print(&quot;Remainder&quot;)
+      print(target-problemSolved)
+    
+    return(agentsRewards)
+}</code></pre>
+<p>Setting up a function to run an idea Challenge</p>
+<pre class="r"><code>ideaChallenge &lt;- function(target, totAgents, totIdeas, clusters, sortedIdea) {
+  
+  generatedIdeas &lt;- as.data.frame(seq(1:totIdeas))
+  generatedIdeas &lt;- phase00(target, totAgents, totIdeas, clusters) # Generating ideas
+
+  if(sortedIdea) generatedIdeas &lt;-arrange(generatedIdeas,desc(idea)) # Sorting ideas by experts
+
+  selectedIdeas &lt;- phase01(clusters, generatedIdeas) # Selecting ideas
+  polledIdeas &lt;- phase02(selectedIdeas, target) # Polling ideas 
+  agentsRewards &lt;- phase03(polledIdeas, target)
+  return(agentsRewards)
+}</code></pre>
+</div>
+</div>
+<div id="run-the-simulation" class="section level1">
+<h1>Run the simulation</h1>
+<div id="standard-idea-challenge-benchmark" class="section level2">
+<h2>Standard idea challenge Benchmark</h2>
+<pre class="r"><code>target &lt;- 1e9 # we set the target at 1'000'000'000
+totAgents &lt;- 1e3
+totIdeas &lt;- 1e4
+clusters &lt;- 1
+
+generatedIdeas0 &lt;- as.data.frame(seq(1:totIdeas))
+generatedIdeas0 &lt;- phase00(target, totAgents, totIdeas, clusters) # Generating ideas
+
+generatedIdeas0 &lt;-arrange(generatedIdeas0,desc(idea)) #Sorting ideas by experts</code></pre>
+<pre><code>## Warning: package 'bindrcpp' was built under R version 3.4.4</code></pre>
+<pre class="r"><code>selectedIdeas0 &lt;- phase01(clusters, generatedIdeas0) # Selecting ideas
+
+agentsRewards0 &lt;- selectedIdeas0 %&gt;% 
+    gather('agentsReward_01', 'agentsReward_02', key = &quot;Phase&quot;, value = &quot;Rewards&quot;)
+
+winners &lt;- dim(filter(agentsRewards0, Rewards&gt;0))[1]
+quality &lt;-filter(agentsRewards0, Rewards==1)[,2]
+prize &lt;- mean(agentsRewards0$Rewards) * totAgents
+challengeID &lt;- &quot;Single Winner&quot;
+
+performance &lt;- data.frame(challengeID, winners, quality, prize)
+
+performance$winners # Winners</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>performance$quality # Sum of the pooled ideas</code></pre>
+<pre><code>## [1] 999930593</code></pre>
+<pre class="r"><code>performance$prize # Cost of prizes </code></pre>
+<pre><code>## [1] 0.05</code></pre>
+</div>
+<div id="first-idea-challenge" class="section level2">
+<h2>First idea challenge</h2>
+<p>MODEL A: Selecting the first idea for each cluster</p>
+<pre class="r"><code>target &lt;- 1e9 # we set the target at 1'000'000'000
+totAgents &lt;- 1e3
+totIdeas &lt;- 1e4
+clusters &lt;- 10
+
+agentsRewards1_1 &lt;- ideaChallenge(target, totAgents, totIdeas, clusters, FALSE)</code></pre>
+<pre><code>## [1] &quot;filter(winners, Rewards &gt;0)&quot;
+## # A tibble: 10 x 3
+## # Groups:   agentsId [10]
+##    agentsId      idea Rewards
+##       &lt;int&gt;     &lt;int&gt;   &lt;dbl&gt;
+##  1      469  61786270       1
+##  2      538 176556752       2
+##  3      437 265508663       1
+##  4      518 372123899       1
+##  5      495 497699242       1
+##  6      416 572853363       1
+##  7      573 660797792       1
+##  8      612 769841419       2
+##  9      417 898389684       1
+## 10      659 908207789       1
+## [1] &quot;Mean(winners$Rewards)&quot;
+## [1] 0.0012
+## [1] &quot;Problem Solved&quot;
+## [1] 946398171
+## [1] &quot;Remainder&quot;
+## [1] 53601829</code></pre>
+<p>Model B: Selecting the idea for each cluster with the highest score</p>
+<pre class="r"><code>agentsRewards2 &lt;- ideaChallenge(target, totAgents, totIdeas, clusters, TRUE) #using sorted ideas</code></pre>
+<pre><code>## [1] &quot;filter(winners, Rewards &gt;0)&quot;
+## # A tibble: 10 x 3
+## # Groups:   agentsId [10]
+##    agentsId      idea Rewards
+##       &lt;int&gt;     &lt;int&gt;   &lt;dbl&gt;
+##  1      359  99989993       2
+##  2      508 199977182       1
+##  3      486 299951496       1
+##  4      617 399994368       2
+##  5      474 499982866       2
+##  6      552 599919136       1
+##  7      469 699974252       1
+##  8      468 799901459       1
+##  9      544 899746668       1
+## 10      578 999930593       1
+## [1] &quot;Mean(winners$Rewards)&quot;
+## [1] 0.0013
+## [1] &quot;Problem Solved&quot;
+## [1] 999967227
+## [1] &quot;Remainder&quot;
+## [1] 32773</code></pre>
+</div>
+<div id="new-idea-challenge-starting-from-the-remainder-of-the-previous-idea-challenge" class="section level2">
+<h2>New idea challenge starting from the remainder of the previous idea challenge</h2>
+<pre class="r"><code># Setting up the remainder as new target
+  winners1_1 &lt;-  summarise(group_by(agentsRewards1_1, agentsId, idea), Rewards = sum(Rewards, na.rm = TRUE))
+  problemSolved1_1 &lt;- sum(filter(winners1_1, Rewards &gt; 1)[, 2]) 
+  remainder1_1 &lt;- target - problemSolved1_1
+
+agentsRewards1_2 &lt;- ideaChallenge(remainder1_1, totAgents, totIdeas, clusters, FALSE)</code></pre>
+<pre><code>## [1] &quot;filter(winners, Rewards &gt;0)&quot;
+## # A tibble: 10 x 3
+## # Groups:   agentsId [10]
+##    agentsId     idea Rewards
+##       &lt;int&gt;    &lt;int&gt;   &lt;dbl&gt;
+##  1      469  3311857       1
+##  2      538  9463764       2
+##  3      437 14231749       1
+##  4      518 19946521       1
+##  5      495 26677589       1
+##  6      416 30705988       1
+##  7      573 35419970       1
+##  8      612 41264908       2
+##  9      417 48155330       1
+## 10      659 48681598       1
+## [1] &quot;Mean(winners$Rewards)&quot;
+## [1] 0.0012
+## [1] &quot;Problem Solved&quot;
+## [1] 50728672
+## [1] &quot;Remainder&quot;
+## [1] 2873157</code></pre>
+</div>
+<div id="new-idea-challenge-cheatstorming-with-the-remainder" class="section level2">
+<h2>New idea challenge: Cheatstorming with the remainder</h2>
+<pre class="r"><code># agentsRewards1_3 &lt;- ideaChallenge_Cheatstorming(remainder1_1, totAgents, totIdeas, clusters, agentsRewards1_1)  # Using old ideas
+
+  target &lt;- remainder1_1 # New target
+
+  generatedIdeas&lt;- agentsRewards1_1 %&gt;%
+    spread(key = Phase, value = Rewards)  # Putting the table back in shape
+  
+  generatedIdeas&lt;-filter(generatedIdeas,idea&lt;target) #Removing the ideas that are above the target  
+  generatedIdeas$ideaClusters &lt;- 1+as.integer(generatedIdeas$idea/(target/clusters))# New clusters
+
+  generatedIdeas$agentsReward_01 &lt;- 1/dim(generatedIdeas)[1] +generatedIdeas$agentsReward_01 # Reward all contributions in phase 01
+  if(is.na(generatedIdeas$agentsReward_02)) {
+    generatedIdeas$agentsReward_02 &lt;- 0 # Remove NA from column 2
+    }</code></pre>
+<pre><code>## Warning in if (is.na(generatedIdeas$agentsReward_02)) {: la condition a une
+## longueur &gt; 1 et seul le premier élément est utilisé</code></pre>
+<pre class="r"><code>  selectedIdeas &lt;- generatedIdeas
+  pooledIdeas &lt;- phase02(selectedIdeas, target) # Pooling ideas
+  agentsRewards &lt;- phase03(pooledIdeas, target)</code></pre>
+<pre><code>## [1] &quot;filter(winners, Rewards &gt;0)&quot;
+## # A tibble: 564 x 3
+## # Groups:   agentsId [301]
+##    agentsId    idea Rewards
+##       &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;
+##  1      465  106433 0.00177
+##  2      546  120655 0.00177
+##  3      342  200380 1.00   
+##  4      569  570522 0.00177
+##  5      405  605266 1.00   
+##  6      573  656347 0.00177
+##  7      510  668174 0.00177
+##  8      585  682127 0.00177
+##  9      320  918506 1.00   
+## 10      309 1026818 0.00177
+## # ... with 554 more rows
+## [1] &quot;Mean(winners$Rewards)&quot;
+## [1] 0.0141844
+## [1] &quot;Problem Solved&quot;
+## [1] 53601829
+## [1] &quot;Remainder&quot;
+## [1] 0</code></pre>
+</div>
+</div>
+<div id="third-idea-challenge-more-clusters" class="section level1">
+<h1>Third idea challenge: more clusters</h1>
+<pre class="r"><code>clusters &lt;- 50 # Increased the number of clusters
+
+agentsRewards3 &lt;- ideaChallenge(target, totAgents, totIdeas, clusters, FALSE)</code></pre>
+<pre><code>## [1] &quot;filter(winners, Rewards &gt;0)&quot;
+## # A tibble: 50 x 3
+## # Groups:   agentsId [46]
+##    agentsId    idea Rewards
+##       &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;
+##  1      484  717746       1
+##  2      536 1250595       1
+##  3      620 3158990       1
+##  4      469 3311857       1
+##  5      698 5331568       1
+##  6      494 5785975       1
+##  7      301 6729982       2
+##  8      526 7681376       1
+##  9      538 9463764       1
+## 10      494 9981604       1
+## # ... with 40 more rows
+## [1] &quot;Mean(winners$Rewards)&quot;
+## [1] 0.0054
+## [1] &quot;Problem Solved&quot;
+## [1] 53600792
+## [1] &quot;Remainder&quot;
+## [1] 1037</code></pre>
 </div>
 
 

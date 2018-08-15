@@ -1,8 +1,10 @@
 ---
 title: "Agent-based model simulator"
 author: "Necantis"
-date: "2018-08-11"
-output: html_document
+date: '2018-08-11'
+output:
+  html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -77,7 +79,6 @@ for(i in 1:clusters){
   }
 }
 
-
 ```
 # Phase 03: Analyze results
 
@@ -110,10 +111,9 @@ Setting up a function to generate ideas
 phase00 <- function(target, totAgents,totIdeas,clusters){
   
   set.seed(1) #Setting a seed to a fix number to allow comparable results
-#    agentsId <- sample(x=1:totAgents, size = totIdeas, replace = TRUE) # Assigning an owner to each idea (this allows multiple ideas to one owner)
     agentsId <- as.integer(rnorm(totIdeas, totAgents/2, totAgents/10)) # Assigning an owner to each idea (this allows multiple ideas to one owner)
     
-  set.seed(1) #Setting a seed to a fix number to allow comparable results
+  set.seed(1) #Setting a seed again
     idea <- as.integer(runif(totIdeas, min = 0, max = target)) # Generating random numbers in a uniform distribution
   
   ideaClusters <- 1+as.integer(idea/(target/clusters)) #Extracting the cluster by dividing each number to the number of clusters
@@ -124,6 +124,7 @@ phase00 <- function(target, totAgents,totIdeas,clusters){
   return(ideas)
 }
 ```
+
 Setting up a function to select ideas
 ```{r}
 phase01 <- function(clusters, ideas){
@@ -136,159 +137,173 @@ phase01 <- function(clusters, ideas){
   
   #Reward the owners of the selected ideas
   lenIdeas <- dim(ideas)[1]
-
   for (i in 1:lenIdeas) {
     j <- ideas[i, 3] # Check the cluster of the idea
     if (is.na(listWinners[j, 2])) {
     # If the cluster of the agent does not have a winner (it's value is NA) ...
     listWinners[j, 2] <- ideas[i, 1] # ... use the agent's ID
     listWinners[j, 3] <- ideas[i, 2] # ... use the idea's value
-    ideas[i, 4] <- 1 # rewarding the selected agent
+    ideas[i, 4] <- 1 +ideas[i, 4] # rewarding the selected agent by increasing the reward to 1 (taking into account multiple challenges)
     }
   }
-  
   return(ideas)
 }
 ```
+
 Setting up a function to pool ideas
 ```{r}
 phase02 <- function (selectedIdeas, target) {
+
   library(lpSolve)
   ideas <- selectedIdeas
-  listWinners <- filter(ideas, agentsReward_01 >0)
-  objective.in <- listWinners[, 2] # Pooling the retained ideas by looking for the best combination
-  
+  listWinners <- filter(ideas, agentsReward_01 >0) #Filtering the list of winners before performing a left join with the pooled ideas
+
+  #Linear programming
+  objective.in <- listWinners[, 2] # Trying to pool the retained ideas by looking for the best combination of coefficients
   mat <-  matrix(listWinners[, 2], nrow = 1, byrow = TRUE) # The sum of the pooled ideas ...
   dir <- "<=" # ... should be below ...
   rhs <- target # ... the target
   optimum <-  lp(direction = "max", objective.in,  mat,  dir,  rhs,  all.bin = TRUE) # Which is the best combination of pooled ideas?
   optimum$solution # The selected ideas
   
-  #Trying a left join
-  listWinners[,5] <- optimum$solution
+  listWinners[,5] <- optimum$solution #Assign prizes
   polledIdeas <- ideas %>%
-  left_join(listWinners, by = c("agentsId","idea","ideaClusters","agentsReward_01"))
-  agentsReward_02 <- polledIdeas$agentsReward_02.x+ polledIdeas$agentsReward_02.y
-  polledIdeas <- data.frame(polledIdeas,agentsReward_02)
+  left_join(listWinners, by = c("agentsId","idea","ideaClusters","agentsReward_01")) #Left join
+  agentsReward_02 <- polledIdeas$agentsReward_02.x+ polledIdeas$agentsReward_02.y # Taking into account previous idea challenges
+  polledIdeas <- data.frame(polledIdeas,agentsReward_02) #add the new column
+
   polledIdeas[5] <- NULL # Removing the redundant columns
   polledIdeas[5] <- NULL # Removing the redundant columns
 
   return(polledIdeas)
 }
 ```
+
 Setting up a function to summarize the rewards
 ```{r}
-phase03 <- function(ideas){
+phase03 <- function(ideas, target){
   library(tidyverse)
   agentsRewards <- ideas %>% 
-  gather('agentsReward_01', 'agentsReward_02', key = "Phase", value = "Rewards")
-  return(agentsRewards)
-}  
+    gather('agentsReward_01', 'agentsReward_02', key = "Phase", value = "Rewards")
+
+  winners <- summarise(group_by(agentsRewards, agentsId, idea), Rewards = sum(Rewards, na.rm = TRUE))
+    winners <- arrange(winners, idea) #Sorting ideas
+    problemSolved <- sum(filter(winners, Rewards > 1)[, 2])
+    
+    #Print results for comparison
+    print("filter(winners, Rewards >0)")
+      print(filter(winners, Rewards > 0)) # Test: selected ideas
+    print("Mean(winners$Rewards)")
+      print(mean(winners$Rewards))
+    print("Problem Solved")
+      print(problemSolved)
+    print("Remainder")
+      print(target-problemSolved)
+    
+    return(agentsRewards)
+}
 ```
 
+Setting up a function to run an idea Challenge
 ```{r}
-ideaChallenge <- function(target, totAgents, totIdeas, clusters) {
+ideaChallenge <- function(target, totAgents, totIdeas, clusters, sortedIdea) {
   
   generatedIdeas <- as.data.frame(seq(1:totIdeas))
   generatedIdeas <- phase00(target, totAgents, totIdeas, clusters) # Generating ideas
-  generatedIdeas <-arrange(generatedIdeas,idea) #Sorting ideas
+
+  if(sortedIdea) generatedIdeas <-arrange(generatedIdeas,desc(idea)) # Sorting ideas by experts
 
   selectedIdeas <- phase01(clusters, generatedIdeas) # Selecting ideas
-
   polledIdeas <- phase02(selectedIdeas, target) # Polling ideas 
-  # print(filter(polledIdeas, agentsReward_01>0)) # Test: Data check
-  
-  agentsRewards <- phase03(polledIdeas)
-  # print(head(filter(agentsRewards,Rewards>0))) # Test: Data check
-  
+  agentsRewards <- phase03(polledIdeas, target)
   return(agentsRewards)
 }
 ```
 
+# Run the simulation
 
-Setting the parameters. We add a parameter totIdeas to allow an agent to have multiple ideas 
+## Standard idea challenge Benchmark
 ```{r}
 target <- 1e9 # we set the target at 1'000'000'000
 totAgents <- 1e3
 totIdeas <- 1e4
-  totIdeas <- max(totIdeas,totAgents) #This lines assures that there are not less ideas than agents
-clusters <- 10
+clusters <- 1
+
+generatedIdeas0 <- as.data.frame(seq(1:totIdeas))
+generatedIdeas0 <- phase00(target, totAgents, totIdeas, clusters) # Generating ideas
+
+generatedIdeas0 <-arrange(generatedIdeas0,desc(idea)) #Sorting ideas by experts
+
+selectedIdeas0 <- phase01(clusters, generatedIdeas0) # Selecting ideas
+
+agentsRewards0 <- selectedIdeas0 %>% 
+    gather('agentsReward_01', 'agentsReward_02', key = "Phase", value = "Rewards")
+
+winners <- dim(filter(agentsRewards0, Rewards>0))[1]
+quality <-filter(agentsRewards0, Rewards==1)[,2]
+prize <- mean(agentsRewards0$Rewards) * totAgents
+challengeID <- "Single Winner"
+
+performance <- data.frame(challengeID, winners, quality, prize)
+
+performance$winners # Winners
+performance$quality # Sum of the pooled ideas
+performance$prize # Cost of prizes 
+
 ```
-Run the simulation
+
+
+## First idea challenge
+MODEL A: Selecting the first idea for each cluster
 ```{r}
+target <- 1e9 # we set the target at 1'000'000'000
+totAgents <- 1e3
+totIdeas <- 1e4
+clusters <- 10
 
-agentsRewards <- ideaChallenge(target, totAgents, totIdeas, clusters)
-winners <- summarise(group_by(agentsRewards, agentsId, idea), Rewards = sum(Rewards, na.rm = TRUE))
-winners <- arrange(winners,idea) #Sorting ideas
-  # filter(winners, Rewards >0) # Test: selected ideas
-problemSolved <- filter(winners, Rewards >1) # Test: data check
-remainder <- sum(problemSolved[,2])
+agentsRewards1_1 <- ideaChallenge(target, totAgents, totIdeas, clusters, FALSE)
+```
+
+Model B: Selecting the idea for each cluster with the highest score
+```{r}
+agentsRewards2 <- ideaChallenge(target, totAgents, totIdeas, clusters, TRUE) #using sorted ideas
+```
+
+## New idea challenge starting from the remainder of the previous idea challenge 
+```{r}
+# Setting up the remainder as new target
+  winners1_1 <-  summarise(group_by(agentsRewards1_1, agentsId, idea), Rewards = sum(Rewards, na.rm = TRUE))
+  problemSolved1_1 <- sum(filter(winners1_1, Rewards > 1)[, 2]) 
+  remainder1_1 <- target - problemSolved1_1
+
+agentsRewards1_2 <- ideaChallenge(remainder1_1, totAgents, totIdeas, clusters, FALSE)
+```
+
+## New idea challenge: Cheatstorming with the remainder
+```{r}
+# agentsRewards1_3 <- ideaChallenge_Cheatstorming(remainder1_1, totAgents, totIdeas, clusters, agentsRewards1_1)  # Using old ideas
+
+  target <- remainder1_1 # New target
+
+  generatedIdeas<- agentsRewards1_1 %>%
+    spread(key = Phase, value = Rewards)  # Putting the table back in shape
   
-target <- target -  remainder #Setting up the remainder for a new idea challenge
-target
+  generatedIdeas<-filter(generatedIdeas,idea<target) #Removing the ideas that are above the target  
+  generatedIdeas$ideaClusters <- 1+as.integer(generatedIdeas$idea/(target/clusters))# New clusters
+
+  generatedIdeas$agentsReward_01 <- 1/dim(generatedIdeas)[1] +generatedIdeas$agentsReward_01 # Reward all contributions in phase 01
+  if(is.na(generatedIdeas$agentsReward_02)) {
+    generatedIdeas$agentsReward_02 <- 0 # Remove NA from column 2
+    }
+
+  selectedIdeas <- generatedIdeas
+  pooledIdeas <- phase02(selectedIdeas, target) # Pooling ideas
+  agentsRewards <- phase03(pooledIdeas, target)
 ```
 
+# Third idea challenge: more clusters
+```{r}
+clusters <- 50 # Increased the number of clusters
 
-#Appendix: Source of inspiration
-
-Testing a [tutorial on ABM](https://marcosmolla.wordpress.com/2015/07/16/an-introduction-to-agent-based-modelling-in-r/)
-
-```{r simulation1}
-#Function to reset the results
-setup <- function() {
-  return(data.frame(
-  id = 1:2,
-  strategy = NA,
-  num_wins = 0
-  ))
-}
-
-#Function to set each agent's Strategy
-chooseStrategy <- function(ind){
-  strats <- sample(x = 1:3, size = nrow(ind)) # chose randomly a strategy among (1:Paper, 2:Scissors, 3:Rock) for each row in the matrix
-  ind$strategy <- strats #Add a columns called strategy
-  return(ind)
-}
-
-# Function to play strategy
-playStrategy <- function(ind) {
-  if (ind$strategy[1] == ind$strategy[2]) { # Do nothing if they have the same strategy
-  } else{
-  #in the case that one chose Rock and the other paper:
-  if (any(ind$strategy == 3) && any(ind$strategy == 1)) {
-  tmp <- ind[ind$strategy == 1, "id"]
-  ind[tmp, "num_wins"] <- ind[tmp, "num_wins"] + 1
-  } else{
-  #for the two other cases, the better weapon wins:
-  tmp <- which(ind[, "strategy"] == max(ind[, "strategy"]))
-  ind[tmp, "num_wins"] <- ind[tmp, "num_wins"] + 1
-  }
-  }
-  return(ind)
-}
-
-#Running the simulation
-rounds <- 1000 # Set 1k rounds
-indDF <- setup() # Initiate vector for results
-dat <- matrix(NA, rounds, 2) #creates a matrix of NA, with a number of ronds equal to rounds and 2 columns (strategy and num_wins)
-for (i in 1:rounds) {
-  indDF <- chooseStrategy(indDF) #Give a strategy to each agent
-  indDF <- playStrategy(indDF) # Agent play according to the strategy
-  dat[i,] <- indDF$num_wins # Check outcomes
-  i <- i + 1 # This step makes it jump by 2 each time
-}
-
-#Visualize results
-plot(
-  dat[, 1],
-  type = 'l',
-  col = '#EA2E49',
-  lwd = 3,
-  xlab = 'time',
-  ylab = 'number of rounds won'
-)
-lines(dat[, 2], col = '#77C4D3', lwd = 3)
-
+agentsRewards3 <- ideaChallenge(target, totAgents, totIdeas, clusters, FALSE)
 ```
-
-** Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

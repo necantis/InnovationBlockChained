@@ -1,0 +1,353 @@
+---
+title: "Coordinating Open Innovation through Tokenization: A Methodology"
+author:
+  - name: Author 01
+    email: email@email.com
+    affiliation: University
+    footnote: Corresponding Author
+  - name: Author 02
+    email: email@email.com
+    affiliation: University
+address:
+  - code: University 01
+    address: Department, Street, City, State, Zip
+  - code: University 02
+    address: Department, Street, City, State, Zip
+abstract: |
+  This is the abstract.
+  It consists of two paragraphs.
+
+journal: "ECIS 2019"
+date: "`r Sys.Date()`"
+bibliography: ECIS2019.bib
+output: rticles::elsevier_article
+---
+
+
+```{r setup, include=FALSE}
+
+# Setting up chunk parameters
+knitr::opts_chunk$set(warning = FALSE) #not show warning messages by default
+knitr::opts_chunk$set(message = FALSE) #not show messages by default
+knitr::opts_chunk$set(echo = FALSE) #not include R chunks by default
+
+# Loading Tidyverse to work with tables
+library(tidyverse)
+
+# Loading ggplot to visualize results
+library(ggplot2)
+
+```
+
+
+1 Introduction
+=============
+This paper presents the preliminary results of an ongoing study that aims at designing new technological solutions for data storage, such as blockchain, to allow firms to perform open innovation by means of decentralized idea challenges. Open innovation is *a paradigm that assumes that firms can and should use external ideas as well as internal ideas, and internal and external paths to market, as the firms look to advance their technology* [@chesbrough_open_2006;@vanhaverbeke_classification_2014]. 
+Among the different technologies that have enabled open innovation, blockchain could actually be considered those that instantiate open innovation in an infrastructure for transactions, products, and services [@shrier_blockchain_2016]. Risen as the technology paradigm on which the bitcoin relied and spread [@nakamoto_bitcoin:_2008], blockchain has been receiving increasing attention as the basis for applications beyond cryptocurrencies [@tapscott_this_2017]. This is due to the individual relevance of different technologies making it up, such as smart contracts, encryption, and distributed Ledger [@halaburda_blockchain_2018].  
+Taking these issues into account, a blockchain generally defined as a *distributed ledger of transactions* [@halaburda_blockchain_2018] is a continuously growing list of records, called blocks, which are linked and secured using cryptography. Each block typically contains a cryptographic hash of the previous block, a timestamp, and transaction data [@swan_blockchain_2015; @tapscott_blockchain_2016]. Blockchain allows tokenization, *the process of substituting a sensitive data element with a non-sensitive equivalent, referred to as a token, that has no extrinsic or exploitable meaning or value*.   
+In this article we assess how to use blockchain to perform tokenization of content and to manage idea challenges in a decentralized fashion, in order to increase the number of innovative ideas, defined here as *ideas that differ from each other and meet the requirements of the solution seeker*.  
+Thus, our research question is: **how to use tokenization to manage idea challenges in a decentralized fashion?**   
+The rest of the paper proceeds as it follows. In section 2 we briefly review the existing literature and we identify the relevant concepts needed to answer our research question. Section 3 summarizes how we used design science to create an artefact under the shape of a method, whereas section 4 describes how we tested it by means of simulation. Section 5 concludes the paper by discussing its limitation and by suggesting further directions of investigation. 
+
+2 Background and motivations
+=============
+In this section, we briefly review existing literature on management literature concerning different solutions to decentralize the innovation process.  
+In the last decade, open innovation [@chesbrough_explicating_2014] has been more and more considered by private as well as public organizations [@viscusi_open_2015]  as a way to obtain competitive advantage through the exploitation of the opportunities and capabilities offered by digitalization [@tilson_research_2010; @yoo_tables_2013] and exploration of alternative solutions to research and development. Among the phenomena related to open innovation the tokenization of work and the adoption of collective contests for ideas searching and problem solving through crowdsourcing [@afuah_crowdsourcing_2012; @tucci_creating_2018; @boudreau_using_2013; @felin_firms_2017] received an increasing attention as a way to exploit collective intelligence for innovation as well as to improve performance of organizations [@malone_handbook_2015; @woolley_collective_2015 ,@riedl_teams_2017]. 
+Taking these issues into account, web-based idea competitions such as Innocentive has already been proven successful at gathering a large set of solvers to address complex problems [@lakhani_open_2012]. @bullinger_community-based_2010-1 have reviewed 52 publications on ideas competition and identified 10 design elements for ideas competition, noticing the most common combination is: an (1) online idea competition (2) initiated by a firm (3) that sets a medium amount of specificity concerning the required tasks, which can range from (4) ideas, sketches, concepts, prototype, and working solution, for a (5) specific target group of (6) individuals that (7) competes and cooperates thanks to community functions in the online platform, for (8) a large amount of time, (9) in exchange of a mix between monetary and non-monetary rewards that are given by (10) a jury of experts. With respect to the process used to generate ideas, we refer to @faste_brainstorm_2013, who compared classic brainstorming with two new solutions: (a) chainstorming, where participants have to use ideas from a previous brainstorming to solve a new problem and (b) cheatstorming, where participants cannot use new ideas and can only use ideas from previous brainstorming. Since performance of cheatstorming seems to outperform the other options, the authors suggested that idea generation is less about idea and more about dealing with cultural influence exerted by unconventional ideas on the ideating team. Therefore, tokenization could be used to list the ideas submitted and rewards those that are winning as well as those that are reused, as long as a way to regroup similar ideas in a decentralized fashion.  
+
+3 Methodology
+=============
+In this section we illustrate the chosen methodology to answer our research question. We position our study in the field of design science research [@hevner_design_2004] and we developed an artefact under the shape of a method, as defined by @march_design_1995. Accordingly, we have followed the guidelines of @gregor_positioning_2013 to create a set of design principles as part of a nascent design theory, which is at level 2 of the contribution types. Finally, we have selected simulation as an experimental way to test our assumptions ex-ante in a setting that allowed to control the variables.   Artificial  evaluation  can be seen as unreal  due to (a) unreal  users,  (b) unreal  systems,  and  (c)  unreal  problems  since it is not  held  by  the users and/or not real tasks, etc.[@sun_cross-evaluation:_2006]. Nonetheless, @pries-heje_strategies_2008[@venable_comprehensive_2012] recommend to use this type of artificial evaluation as an ex-ante assessment of the system, before testing it on larger scale with real users (naturalistic evaluations).  
+In what follows we present our artefact in the shape of a method composed of four phases, as shown in figure 1, and we illustrate how it works by a simple example. 
+
+```{r simDemo}
+# Setup
+agents_num <- 3
+clients_num <- 1
+experts_num <- 50
+
+market_dim <- 2
+product_dim <- 2
+ideas <- 2
+
+challenges_num <- 1 # how many iterations done
+levels <- 100 # Setting the maximum skills per dimension
+
+set.seed(1) # Since we use random numbers, the seed seeting assures same results every time
+agents <- data.frame(Agent_ID = seq(1:agents_num), skill = as.integer(rpois(agents_num, levels/5)), career = as.integer(rpois(agents_num, levels/2)), target = as.integer(rnorm(agents_num, levels/2, levels/5)))
+
+```
+Table 1 illustrates the results of an idea competition concerning how to reduce energy consumption in private households. For sake of simplicity, we will assume to obtain four ideas. Each idea receives a unique identification number, which is associated with the unique ID of the user (Step 1). Then, by means of automatic or manual classification, the ideas are assigned to clusters showing the “stance” of each idea: for example, “behavioural” vs. “technical” or “engineering” oriented idea (Step 2).  For sake of discussion, we can also assume that a set of evaluators give a score between 1 and 9 for each idea according to three dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is 1). Finally, the first idea of each cluster is selected, the selected players (065, 177 and 356) win a prize and are invited for phase 2.  
+In the second phase, the players perform chainstorm and combine the ideas that passed phase 01, to produce new ideas. Table 2 shows the creation of two new ideas. In this step, the ideas are assessed by evaluators, who give a score between 1 and 9 for each idea according to three dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is 1).  For sake of illustration, we can assume that the score of two ideas in one dimension is the sum of the scores of the two individual ideas in that dimension. That allows us to predict the score of idea 005 and idea 006, and choose idea 686, since it maximizes the satisfaction of the client.  
+A standard idea challenge would have rewarded the best idea (in this case idea 003, with a score of 724). Nonetheless, that would require an expert assessment of all ideas, whereas our model allows assessing only the pooled ideas, which are the sum of possible combinations among ideas selected in phase 01. Hence, ideas to assess = {[1+(clusters/2)]*(cluster/2)]/2 
+That leads to the first design guideline for a decentralized idea challenge, which is associated with a testable proposition.  
+**P1**: automatic clustering of tokenized ideas in a blockchain and random selection significantly reduce the number of ideas to assess but it decreases the quality of the outcome.  
+
+Moreover, one could expect the client to seek for a solution that scores 9 in every dimension, which leads to 999 as target in our example. Thus, it is possible to estimate the difference between the target and the chosen idea in phase 02, which is 999 – 687 = 312. Setting 312 as the new target, we could select the ideas from phase 01 that are below the target, in our case idea 002 and idea 004. Then, we could set up a cheatstorming competition that rewards all ideas below the target for contribution, and then select the best pool of ideas created on a previous context. In our case, the combination of idea 002 and idea 004 reaches 312. This idea would have not be retained in phase 02, but it now perfectly fits the narrow problem of the client. Moreover, the number of pooled ideas might be significant in this step, but it still below the number of ideas to assess by experts in a standard idea challenge.  
+That leads to the second design guideline for a decentralized idea challenge, which is associated with a testable proposition.  
+**P2**: collection of tokenized ideas in a blockchain done in a previous challenge increases the quality of the outcome but it increases the number of ideas to assess
+
+4	Preliminary results by simulation 
+====
+We use R Statistical package  @r._core_team_r:_2013 to write an agent-based simulation, that is a computerized simulation of a number of decision-makers (agents), which interact through prescribed rules [@farmer_economy_2009]. Our code has four functions, corresponding to the following phases: 
+```{r simSetup}
+# Setup
+agents_num <- 50
+clients_num <- 50
+experts_num <- 50
+
+market_dim <- 50
+product_dim <- 50
+ideas <- 100
+
+mentoring_sessions <- data.frame(NA)
+
+challenges_num <- 100 # how many iterations done
+levels <- 100 # Setting the maximum skills per dimension
+
+```
+-	phase 00 generates the agents and it assigns one or more ideas to each agent. It takes as initial parameters the whole set of possible market dimensions assessed by the client (=`r market_dim`), the whole set of possible market dimensions assessed by the client (=`r product_dim`), the number of clients (=`r clients_num`), the number of experts (=`r experts_num`), the number of agents (=`r agents_num`), the maximum skill level per dimension (=`r levels`) and the number of challenges (=`r challenges_num`). In the previous example, the target was 10^3, there were 3 agents that generated 4 ideas into 3 clusters in phase 01. Our simulation uses 10^9 as target, 10^3 agents, 10^4 ideas and 10 clusters.
+
+```{r init}
+
+set.seed(1) # Since we use random numbers, the seed seeting assures same results every time
+agents <- data.frame(Agent_ID = seq(1:agents_num), s_pro_01 = as.integer(rpois(agents_num, levels/10)), s_pro_02 = as.integer(rpois(agents_num, levels/10)), s_pro_03 = as.integer(rpois(agents_num, levels/10)), s_mkt_01 = as.integer(rpois(agents_num, levels/10)), s_mktt_02 = as.integer(rpois(agents_num, levels/10)), s_mkt_03 = as.integer(rpois(agents_num, levels/10)), money = rep(0,agents_num))
+
+head(agents)
+
+experts <- data.frame(Expert_ID = seq(1:agents_num), s_pro_01 = as.integer(rpois(agents_num, levels/2)), s_pro_02 = as.integer(rpois(agents_num, levels/2)), s_pro_03 = as.integer(rpois(agents_num, levels/2)), s_mkt_01 = as.integer(rpois(agents_num, levels/10)), s_mktt_02 = as.integer(rpois(agents_num, levels/10)), s_mkt_03 = as.integer(rpois(agents_num, levels/10)), money = rep(0,agents_num))
+
+head(experts)
+
+clients <- data.frame(Client_ID = seq(1:agents_num), s_pro_01 = as.integer(rpois(agents_num, levels/10)), s_pro_02 = as.integer(rpois(agents_num, levels/10)), s_pro_03 = as.integer(rpois(agents_num, levels/10)), s_mkt_01 = as.integer(rpois(agents_num, levels/2)), s_mktt_02 = as.integer(rpois(agents_num, levels/2)), s_mkt_03 = as.integer(rpois(agents_num, levels/2)), money = rep(0,agents_num))
+
+head(clients)
+
+```
+
+
+-	phase 01 divides the ideas into clusters and retains one idea per cluster. We shall compare the case when the winner for each cluster is the first one (model A) or the one with the idea that has the greatest value (model B).
+-	phase 02 selects and combines the retained idea into the best idea pool.  This is a problem of linear programming that tries to maximizes the sum of the ideas by defining that the coefficient of each idea is binary (either we select it or not) and by setting one constraint (the sum of the pooled idea cannot be greater than the target).
+-	phase 03 assesses the average payoff of agents, by using the mean of the individual payoff, and the payoff of the client, by calculating the remainder between the target and the pooled ideas. For sake of clarity, we shall compare the situation when the idea challenge has 1 stage and one cluster (Model 0), when we add a second stage performing chainstorming (Model 1) and when we add a third stage performing cheatstorming.
+
+Table 3 illustrates the outcome of the simulations. The first model (M0) allows to obtain a good idea selected among 10^4 ideas. That assures a good satisfaction for the client and a small cost in terms of prize for the only winner. Nonetheless, one can assume it would be fairly expensive to pay experts to evaluate the 10^4 ideas and it would be quite disappointing for the agents to have 1 chance out of 10^4 to win. Model 1a has 10 winners for the phase 01, that is one per cluster. One can assume that cluster definition could be done by an unsupervised algorithm for clustering based on textual description of the solution, so there will be no need to request expert evaluations. In the second stage, the ideas are pooled together and the outcome is below the one of the first model, and the agents to reward are 14 (10 in the first stage and 4 in the second stage). Nonetheless, the cost for idea assessment are significantly lower, since there are only 15 possible combinations to evaluate. This validates our first testable proposition (P1). Moreover, Model 1b appears evident why it would not be wise to select the best idea for every cluster. Indeed, it would take the same amount of assessment as the same model to obtain the same result (in the second phase, the agent with the best idea cannot find anyone that can improve it).
+
+Finally, model 2 has been conceived to illustrate that with a large set of agents it would be theoretically possible to receive a number of ideas to assess that is greater than the initial number, although it is unlikely to occur in reality. This validates our second testable proposition (P2) under the condition that the number of retained ideas in the second idea challenge is not too large (although, one could choose to solve this problem by using idea clustering again).  
+
+5	Discussions
+====
+In this section we assess our article by using the six guidelines for a design science paper of [@hevner_design_2004].  The first guideline states that design-science research must produce a viable artifact in the form of a construct, a model, a method, or an instantiation: our artefact is a model for a decentralized idea challenge, which uses tokenization in a blockchain to store ideas. 
+The second guideline claims that the objective of design-science research is to develop technology-based solutions to important and relevant business problems. Our solution is based on a new technology and it addresses an increasing need for firms that seek to innovate.
+The third guideline reminds that the utility, quality, and efficacy of a design artifact must be rigorously demonstrated via well-executed evaluation methods. We have chosen to use agent-based simulation as a form of ex-ante artificial assessment, being aware of its advantages and shortcomings.
+The fourth guideline says that effective design-science research must provide clear and verifiable contributions in the areas of the design artifact, design foundations, and/or design methodologies. Our artefact builds on previous research on idea challenges and it extends it by offering design guidelines to implement it in a business context.
+The fifth guidelines suggests that design-science research relies upon the application of rigorous methods in both the construction and evaluation of the design artifact. In this paper we have illustrated the kernel theories that led to our solution and the underlying assumption in our evaluation. 
+The sixth guideline concerns the search for an effective artifact that requires utilizing available means to reach desired ends while satisfying laws in the problem environment. Although the simulation has used a large set of agents to test the boundary conditions of our design theory, while building our model, we took into account the tools that a firm would have to create an idea challenge. 
+Finally, the seventh guideline justify our choice of targeting this conference, since design-science research must be presented effectively both to technology-oriented as well as management-oriented audiences.
+This research project is currently ongoing and it has two major limitations. On the one hand, future research shall evaluate our model in a real context, by performing experimental tests with people solving the same problem while using different techniques. On the other hand, in a future paper we shall describe how to perform automatic idea clustering of the ideas by means of unsupervised algorithm that analyses the corpora of all the idea and performs text analysis.
+Nonetheless, our model already offers to small and big firms the possibility to exploit a new technology to manage idea challenges in an effective and efficient way, and it opens new directions for research, such as combining game theory to assess the payoff of agents playing different theories as well as exploring the other features of blockchain to improve the performance of open innovation.
+
+6	Conclusion
+====
+In this paper we have proposed a method for exploiting tokenization as a way to identify, select, and create new ideas from contests, challenges, and crowdsourcing. The current proposals present a set of limitations, whose solution will be explored in future work. In particular, the assignment of values to ideas would require further investigation. Actually, imagining that each idea receives a grade of 1 to 9 on three dimensions, and the three dimensions have different weights (100, 10 and 1), one can describe the value of the idea with numbers from 1 to 1000. The target will always be 9 * 10 ^ n is the number of dimensions, because the customer would like to have everything at its best. Furthermore, in this paper we have considered 10 ^ n + 1 to model the fact that the customer will never be satisfied. Another limitation is that the artefact is still at experimental level and the number of tested results is still too small for both justifying it and to have an explicit theory from it. As to this issue, in future work we are going to explore too different solutions that are, 1) to divide ideas into clusters (with a clustering algorithm) and take the first idea of each cluster, which allows to reduce the costs of evaluation drastically, and 2) developing and analyzing a multiple-step challenge, which can increase the payoff for agents, at limited costs for the customer. Notwithstanding the current limitations, we believe that the method would represent a first step towards a full understanding of how to exploit the opportunities offered by technologies such as blockchain for open innovation, thus bridging the gap between technical and managerial perspectives characterizing the two state of the art stances with regard the two topics. 
+
+7	Annexes: R code of the agent-based simulation
+=== 
+```{r echo=TRUE, eval=FALSE}
+# Setting up a function to generate ideas
+phase00 <- function(target, totAgents, totIdeas, clusters) {
+set.seed(1) #Setting a seed to allow comparable results 
+# this allows multiple ideas to one owner
+agentsId <-
+as.integer(rnorm(totIdeas, totAgents / 2, totAgents / 10)) 
+set.seed(1) #Setting a seed again
+# Generating random numbers in a uniform distribution
+idea <-
+as.integer(runif(totIdeas, min = 0, max = target)) 
+#Extracting the cluster by dividing each number to ... 
+# ... the number of clusters
+ideaClusters <-
+1 + as.integer(idea / (target / clusters)) 
+agentsReward_01 <-
+rep(0, totIdeas) # A variable associated to phase 01
+agentsReward_02 <-
+rep(0, totIdeas) # A variable associated to phase 02
+#Creating a dataframe with ID, value and cluster
+ideas <-
+data.frame(agentsId,
+idea,
+ideaClusters,
+agentsReward_01,
+agentsReward_02) 
+return(ideas)
+}
+# Setting up a function to select ideas
+phase01 <- function(clusters, ideas) {
+#Creating a dataframe with Cluster ID, Winner ID and value
+idClusters <- seq(1:clusters)
+idWinners <- rep(NA, clusters)
+valueWinners <- rep(NA, clusters)
+listWinners <-  data.frame(idClusters, idWinners, valueWinners)
+lenIdeas <- dim(ideas)[1]
+for (i in 1:lenIdeas) {
+#Reward the owners of the selected ideas
+j <- ideas[i, 3] # Check the cluster of the idea
+if (is.na(listWinners[j, 2])) {
+# If the cluster of the agent does not have a winner ...
+# ... (it's value is NA) ...
+listWinners[j, 2] <- ideas[i, 1] # ... use the agent's ID
+listWinners[j, 3] <- ideas[i, 2] # ... use the idea's value
+# rewarding the selected agent by increasing the reward to 1 
+# (taking into account multiple challenges)
+ideas[i, 4] <-
+1 + ideas[i, 4] 
+}
+}
+return(ideas)
+}
+# Setting up a function to pool ideas
+phase02 <- function (selectedIdeas, target) {
+library(lpSolve)
+ideas <- selectedIdeas
+#Filtering the list of winners before performing a left join ...
+# ... with the pooled ideas
+listWinners <-
+filter(ideas, agentsReward_01 > 0) 
+# Trying to pool the retained ideas by looking for ...
+#... the best combination of coefficients
+objective.in <-
+listWinners[, 2] 
+# The sum of the pooled ideas ...
+mat <-
+matrix(listWinners[, 2], nrow = 1, byrow = TRUE) 
+dir <- "<=" # ... should be below ...
+rhs <- target # ... the target
+optimum <-
+lp(direction = "max",
+objective.in,
+mat,
+dir,
+rhs,
+all.bin = TRUE) # Which is the best combination of pooled ideas?
+optimum$solution # The selected ideas
+listWinners[, 5] <- optimum$solution #Assign prizes
+polledIdeas <- ideas %>%
+left_join(listWinners,
+by = c("agentsId", "idea", "ideaClusters", "agentsReward_01"))
+# Taking into account previous idea challenges
+agentsReward_02 <-
+polledIdeas$agentsReward_02.x + polledIdeas$agentsReward_02.y 
+polledIdeas <-
+data.frame(polledIdeas, agentsReward_02) #add the new column
+polledIdeas[5] <- NULL # Removing the redundant columns
+polledIdeas[5] <- NULL # Removing the redundant columns
+return(polledIdeas)
+}
+# Setting up a function to summarize the rewards
+phase03 <- function(ideas, target) {
+library(tidyverse)
+agentsRewards <- ideas %>%
+gather('agentsReward_01',
+'agentsReward_02',
+key = "Phase",
+value = "Rewards")
+winners <-
+summarise(group_by(agentsRewards, agentsId, idea),
+Rewards = sum(Rewards, na.rm = TRUE))
+winners <- arrange(winners, idea) #Sorting ideas
+problemSolved <- sum(filter(winners, Rewards > 1)[, 2])
+print(filter(winners, Rewards > 0)) # Print results
+print(mean(winners$Rewards))
+print(problemSolved)
+print(target - problemSolved)
+return(agentsRewards)
+}
+# Setting up a function to run an idea Challenge
+ideaChallenge <-
+function(target,
+totAgents,
+totIdeas,
+clusters,
+sortedIdea) {
+generatedIdeas <- as.data.frame(seq(1:totIdeas))
+# Generating ideas
+generatedIdeas <-
+phase00(target, totAgents, totIdeas, clusters) 
+if (sortedIdea)
+generatedIdeas <-
+arrange(generatedIdeas, desc(idea)) # Sorting ideas by experts
+selectedIdeas <-
+phase01(clusters, generatedIdeas) # Selecting ideas
+polledIdeas <- phase02(selectedIdeas, target) # Polling ideas
+agentsRewards <- phase03(polledIdeas, target)
+return(agentsRewards)
+}
+##RUN THE SIMULATION
+# MODEL 0. Standard idea challenge Benchmark
+target <- 1e9 # we set the target at 1'000'000'000
+totAgents <- 1e3
+totIdeas <- 1e4
+clusters <- 1
+generatedIdeas0 <- as.data.frame(seq(1:totIdeas))
+# Generating ideas
+generatedIdeas0 <-
+phase00(target, totAgents, totIdeas, clusters) 
+generatedIdeas0 <-
+arrange(generatedIdeas0, desc(idea)) #Sorting ideas by experts
+selectedIdeas0 <-
+phase01(clusters, generatedIdeas0) # Selecting ideas
+agentsRewards0 <- selectedIdeas0 %>%
+gather('agentsReward_01',
+'agentsReward_02',
+key = "Phase",
+value = "Rewards")
+winners <- dim(filter(agentsRewards0, Rewards > 0))[1]
+quality <- filter(agentsRewards0, Rewards == 1)[, 2]
+prize <- mean(agentsRewards0$Rewards) * totAgents
+challengeID <- "Single Winner"
+performance <- data.frame(challengeID, winners, quality, prize)
+performance$winners # Winners
+performance$quality # Sum of the pooled ideas
+performance$prize # Cost of prizes
+# MODEL 1A: Selecting the first idea for each cluster
+target <- 1e9 # we set the target at 1'000'000'000
+totAgents <- 1e3
+totIdeas <- 1e4
+clusters <- 10
+agentsRewards1_1 <-
+ideaChallenge(target, totAgents, totIdeas, clusters, FALSE)
+# Model 1B: Selecting the idea for each cluster with ...
+#...the highest score
+
+#using sorted ideas
+agentsRewards2 <-
+ideaChallenge(target, totAgents, totIdeas, clusters, TRUE) 
+# MODEL 2: Cheatstorming
+target <- remainder1_1 # New target
+generatedIdeas <- agentsRewards1_1 %>%
+spread(key = Phase, value = Rewards)  # Spread the table
+generatedIdeas <-
+filter(generatedIdeas, idea < target) #Select ideas
+# New clusters
+generatedIdeas$ideaClusters <-
+1 + as.integer(generatedIdeas$idea / (target / clusters))
+# Reward all contributions in phase 01
+generatedIdeas$agentsReward_01 <-
+1 / dim(generatedIdeas)[1] + generatedIdeas$agentsReward_01 
+if (is.na(generatedIdeas$agentsReward_02)) {
+generatedIdeas$agentsReward_02 <- 0 # Remove NA from column 2
+}
+selectedIdeas <- generatedIdeas
+pooledIdeas <- phase02(selectedIdeas, target) # Pooling ideas
+# Check number of winners of phase
+agentsRewards <- phase03(pooledIdeas, target)
+filter(agentsRewards, Rewards >= 1) 
+```
+
+
+\newpage
+8	References {#references .numbered}
+==========
+
+
+
+

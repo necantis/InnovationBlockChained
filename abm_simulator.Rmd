@@ -3,8 +3,8 @@ title: "Agent-based model simulator"
 author: "Necantis"
 date: '2018-08-11'
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -299,6 +299,7 @@ agentsRewards1_2 <- ideaChallenge(remainder1_1, totAgents, totIdeas, clusters, F
   selectedIdeas <- generatedIdeas
   pooledIdeas <- phase02(selectedIdeas, target) # Pooling ideas
   agentsRewards <- phase03(pooledIdeas, target)
+  filter(agentsRewards, Rewards>=1)
 ```
 
 # Third idea challenge: more clusters

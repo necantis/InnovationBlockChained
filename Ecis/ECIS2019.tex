@@ -1,0 +1,821 @@
+\documentclass[]{elsarticle} %review=doublespace preprint=single 5p=2 column
+%%% Begin My package additions %%%%%%%%%%%%%%%%%%%
+\usepackage[hyphens]{url}
+
+  \journal{ECIS 2019} % Sets Journal name
+
+
+\usepackage{lineno} % add
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\bibliographystyle{elsarticle-harv}
+\biboptions{sort&compress} % For natbib
+\usepackage{graphicx}
+\usepackage{booktabs} % book-quality tables
+%%%%%%%%%%%%%%%% end my additions to header
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \usepackage{fontspec}
+  \ifxetex
+    \usepackage{xltxtra,xunicode}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={Coordinating Open Innovation through Tokenization: A Methodology},
+            colorlinks=true,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+
+\setcounter{secnumdepth}{0}
+% Pandoc toggle for numbering sections (defaults to be off)
+\setcounter{secnumdepth}{0}
+% Pandoc header
+
+
+
+\begin{document}
+\begin{frontmatter}
+
+  \title{Coordinating Open Innovation through Tokenization: A Methodology}
+    \author[University]{Author 01\corref{c1}}
+   \ead{email@email.com} 
+   \cortext[c1]{Corresponding Author}
+    \author[University]{Author 02}
+   \ead{email@email.com} 
+  
+      \address[University 01]{Department, Street, City, State, Zip}
+    \address[University 02]{Department, Street, City, State, Zip}
+  
+  \begin{abstract}
+  This is the abstract. It consists of two paragraphs.
+  \end{abstract}
+  
+ \end{frontmatter}
+
+\section{1 Introduction}\label{introduction}
+
+This paper presents the preliminary results of an ongoing study that
+aims at designing new technological solutions for data storage, such as
+blockchain, to allow firms to perform open innovation by means of
+decentralized idea challenges. Open innovation is \emph{a paradigm that
+assumes that firms can and should use external ideas as well as internal
+ideas, and internal and external paths to market, as the firms look to
+advance their technology} (Chesbrough, Vanhaverbeke, and West 2006;
+Vanhaverbeke and Chesbrough 2014). Among the different technologies that
+have enabled open innovation, blockchain could actually be considered
+those that instantiate open innovation in an infrastructure for
+transactions, products, and services (Shrier, Wu, and Pentland 2016).
+Risen as the technology paradigm on which the bitcoin relied and spread
+(Nakamoto 2008), blockchain has been receiving increasing attention as
+the basis for applications beyond cryptocurrencies (D. Tapscott 2017).
+This is due to the individual relevance of different technologies making
+it up, such as smart contracts, encryption, and distributed Ledger
+(Halaburda 2018).\\
+Taking these issues into account, a blockchain generally defined as a
+\emph{distributed ledger of transactions} (Halaburda 2018) is a
+continuously growing list of records, called blocks, which are linked
+and secured using cryptography. Each block typically contains a
+cryptographic hash of the previous block, a timestamp, and transaction
+data (Swan 2015; D. Tapscott and Tapscott 2016). Blockchain allows
+tokenization, \emph{the process of substituting a sensitive data element
+with a non-sensitive equivalent, referred to as a token, that has no
+extrinsic or exploitable meaning or value}.\\
+In this article we assess how to use blockchain to perform tokenization
+of content and to manage idea challenges in a decentralized fashion, in
+order to increase the number of innovative ideas, defined here as
+\emph{ideas that differ from each other and meet the requirements of the
+solution seeker}.\\
+Thus, our research question is: \textbf{how to use tokenization to
+manage idea challenges in a decentralized fashion?}\\
+The rest of the paper proceeds as it follows. In section 2 we briefly
+review the existing literature and we identify the relevant concepts
+needed to answer our research question. Section 3 summarizes how we used
+design science to create an artefact under the shape of a method,
+whereas section 4 describes how we tested it by means of simulation.
+Section 5 concludes the paper by discussing its limitation and by
+suggesting further directions of investigation.
+
+\section{2 Background and motivations}\label{background-and-motivations}
+
+In this section, we briefly review existing literature on management
+literature concerning different solutions to decentralize the innovation
+process.\\
+In the last decade, open innovation (Chesbrough and Borgers 2014) has
+been more and more considered by private as well as public organizations
+(Viscusi, Poulin, and Tucci 2015) as a way to obtain competitive
+advantage through the exploitation of the opportunities and capabilities
+offered by digitalization (Tilson, Lyytinen, and Sørensen 2010; Yoo
+2013) and exploration of alternative solutions to research and
+development. Among the phenomena related to open innovation the
+tokenization of work and the adoption of collective contests for ideas
+searching and problem solving through crowdsourcing (Afuah and Tucci
+2012; Tucci, Afuah, and Viscusi 2018; Boudreau and Lakhani 2013; Felin,
+Lakhani, and Tushman 2017) received an increasing attention as a way to
+exploit collective intelligence for innovation as well as to improve
+performance of organizations (Malone and Bernstein 2015; Woolley,
+Aggarwal, and Malone 2015 ,Riedl and Woolley (2017)). Taking these
+issues into account, web-based idea competitions such as Innocentive has
+already been proven successful at gathering a large set of solvers to
+address complex problems (K. Lakhani, Lifshitz-Assaf, and Tushman 2012).
+Bullinger et al. (2010) have reviewed 52 publications on ideas
+competition and identified 10 design elements for ideas competition,
+noticing the most common combination is: an (1) online idea competition
+(2) initiated by a firm (3) that sets a medium amount of specificity
+concerning the required tasks, which can range from (4) ideas, sketches,
+concepts, prototype, and working solution, for a (5) specific target
+group of (6) individuals that (7) competes and cooperates thanks to
+community functions in the online platform, for (8) a large amount of
+time, (9) in exchange of a mix between monetary and non-monetary rewards
+that are given by (10) a jury of experts. With respect to the process
+used to generate ideas, we refer to Faste et al. (2013), who compared
+classic brainstorming with two new solutions: (a) chainstorming, where
+participants have to use ideas from a previous brainstorming to solve a
+new problem and (b) cheatstorming, where participants cannot use new
+ideas and can only use ideas from previous brainstorming. Since
+performance of cheatstorming seems to outperform the other options, the
+authors suggested that idea generation is less about idea and more about
+dealing with cultural influence exerted by unconventional ideas on the
+ideating team. Therefore, tokenization could be used to list the ideas
+submitted and rewards those that are winning as well as those that are
+reused, as long as a way to regroup similar ideas in a decentralized
+fashion.
+
+\section{3 Methodology}\label{methodology}
+
+In this section we illustrate the chosen methodology to answer our
+research question. We position our study in the field of design science
+research (A. Hevner et al. 2004) and we developed an artefact under the
+shape of a method, as defined by S. T. March and Smith (1995).
+Accordingly, we have followed the guidelines of Gregor and Hevner (2013)
+to create a set of design principles as part of a nascent design theory,
+which is at level 2 of the contribution types. Finally, we have selected
+simulation as an experimental way to test our assumptions ex-ante in a
+setting that allowed to control the variables. Artificial evaluation can
+be seen as unreal due to (a) unreal users, (b) unreal systems, and (c)
+unreal problems since it is not held by the users and/or not real tasks,
+etc.(Sun and Kantor 2006). Nonetheless, Pries-Heje, Baskerville, and
+Venable (2008; Venable, Pries-Heje, and Baskerville 2012) recommend to
+use this type of artificial evaluation as an ex-ante assessment of the
+system, before testing it on larger scale with real users (naturalistic
+evaluations).\\
+In what follows we present our artefact in the shape of a method
+composed of four phases, as shown in figure 1, and we illustrate how it
+works by a simple example.
+
+Table 1 illustrates the results of an idea competition concerning how to
+reduce energy consumption in private households. For sake of simplicity,
+we will assume to obtain four ideas. Each idea receives a unique
+identification number, which is associated with the unique ID of the
+user (Step 1). Then, by means of automatic or manual classification, the
+ideas are assigned to clusters showing the ``stance'' of each idea: for
+example, ``behavioural'' vs. ``technical'' or ``engineering'' oriented
+idea (Step 2). For sake of discussion, we can also assume that a set of
+evaluators give a score between 1 and 9 for each idea according to three
+dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is
+1). Finally, the first idea of each cluster is selected, the selected
+players (065, 177 and 356) win a prize and are invited for phase 2.\\
+In the second phase, the players perform chainstorm and combine the
+ideas that passed phase 01, to produce new ideas. Table 2 shows the
+creation of two new ideas. In this step, the ideas are assessed by
+evaluators, who give a score between 1 and 9 for each idea according to
+three dimensions, which have different weights (D1 is 100, D2 is 10 and
+D3 is 1). For sake of illustration, we can assume that the score of two
+ideas in one dimension is the sum of the scores of the two individual
+ideas in that dimension. That allows us to predict the score of idea 005
+and idea 006, and choose idea 686, since it maximizes the satisfaction
+of the client.\\
+A standard idea challenge would have rewarded the best idea (in this
+case idea 003, with a score of 724). Nonetheless, that would require an
+expert assessment of all ideas, whereas our model allows assessing only
+the pooled ideas, which are the sum of possible combinations among ideas
+selected in phase 01. Hence, ideas to assess =
+\{{[}1+(clusters/2){]}*(cluster/2){]}/2 That leads to the first design
+guideline for a decentralized idea challenge, which is associated with a
+testable proposition.\\
+\textbf{P1}: automatic clustering of tokenized ideas in a blockchain and
+random selection significantly reduce the number of ideas to assess but
+it decreases the quality of the outcome.
+
+Moreover, one could expect the client to seek for a solution that scores
+9 in every dimension, which leads to 999 as target in our example. Thus,
+it is possible to estimate the difference between the target and the
+chosen idea in phase 02, which is 999 -- 687 = 312. Setting 312 as the
+new target, we could select the ideas from phase 01 that are below the
+target, in our case idea 002 and idea 004. Then, we could set up a
+cheatstorming competition that rewards all ideas below the target for
+contribution, and then select the best pool of ideas created on a
+previous context. In our case, the combination of idea 002 and idea 004
+reaches 312. This idea would have not be retained in phase 02, but it
+now perfectly fits the narrow problem of the client. Moreover, the
+number of pooled ideas might be significant in this step, but it still
+below the number of ideas to assess by experts in a standard idea
+challenge.\\
+That leads to the second design guideline for a decentralized idea
+challenge, which is associated with a testable proposition.\\
+\textbf{P2}: collection of tokenized ideas in a blockchain done in a
+previous challenge increases the quality of the outcome but it increases
+the number of ideas to assess
+
+\section{4 Preliminary results by
+simulation}\label{preliminary-results-by-simulation}
+
+We use R Statistical package Team (2013) to write an agent-based
+simulation, that is a computerized simulation of a number of
+decision-makers (agents), which interact through prescribed rules
+(Farmer and Foley 2009). Our code has four functions, corresponding to
+the following phases:
+
+\begin{itemize}
+\tightlist
+\item
+  phase 00 generates the agents and it assigns one or more ideas to each
+  agent. It takes as initial parameters the whole set of possible market
+  dimensions assessed by the client (=50), the whole set of possible
+  market dimensions assessed by the client (=50), the number of clients
+  (=50), the number of experts (=50), the number of agents (=50), the
+  maximum skill level per dimension (=100) and the number of challenges
+  (=100). In the previous example, the target was 10\^{}3, there were 3
+  agents that generated 4 ideas into 3 clusters in phase 01. Our
+  simulation uses 10\^{}9 as target, 10\^{}3 agents, 10\^{}4 ideas and
+  10 clusters.
+\end{itemize}
+
+\begin{verbatim}
+##   Agent_ID s_pro_01 s_pro_02 s_pro_03 s_mkt_01 s_mktt_02 s_mkt_03 money
+## 1        1        8        9        8        9        11        8     0
+## 2        2       10       12        8        8        15       11     0
+## 3        3        7        9        9        9         9       10     0
+## 4        4       11       12       11       12         7        5     0
+## 5        5       14       10        9       16         9       11     0
+## 6        6       12        7        8       13        12        7     0
+\end{verbatim}
+
+\begin{verbatim}
+##   Expert_ID s_pro_01 s_pro_02 s_pro_03 s_mkt_01 s_mktt_02 s_mkt_03 money
+## 1         1       51       36       49        8         9        6     0
+## 2         2       51       47       46       15         7       11     0
+## 3         3       43       50       38        7         3       13     0
+## 4         4       60       59       48        9        14        7     0
+## 5         5       54       54       54       10        11        5     0
+## 6         6       52       50       56       12        15        8     0
+\end{verbatim}
+
+\begin{verbatim}
+##   Client_ID s_pro_01 s_pro_02 s_pro_03 s_mkt_01 s_mktt_02 s_mkt_03 money
+## 1         1        7       12        7       51        48       45     0
+## 2         2        7        5        3       55        50       40     0
+## 3         3        7       12        5       43        63       45     0
+## 4         4        6       16       12       56        40       47     0
+## 5         5        7        6       14       51        53       51     0
+## 6         6       12        9        8       51        56       50     0
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  phase 01 divides the ideas into clusters and retains one idea per
+  cluster. We shall compare the case when the winner for each cluster is
+  the first one (model A) or the one with the idea that has the greatest
+  value (model B).
+\item
+  phase 02 selects and combines the retained idea into the best idea
+  pool. This is a problem of linear programming that tries to maximizes
+  the sum of the ideas by defining that the coefficient of each idea is
+  binary (either we select it or not) and by setting one constraint (the
+  sum of the pooled idea cannot be greater than the target).
+\item
+  phase 03 assesses the average payoff of agents, by using the mean of
+  the individual payoff, and the payoff of the client, by calculating
+  the remainder between the target and the pooled ideas. For sake of
+  clarity, we shall compare the situation when the idea challenge has 1
+  stage and one cluster (Model 0), when we add a second stage performing
+  chainstorming (Model 1) and when we add a third stage performing
+  cheatstorming.
+\end{itemize}
+
+Table 3 illustrates the outcome of the simulations. The first model (M0)
+allows to obtain a good idea selected among 10\^{}4 ideas. That assures
+a good satisfaction for the client and a small cost in terms of prize
+for the only winner. Nonetheless, one can assume it would be fairly
+expensive to pay experts to evaluate the 10\^{}4 ideas and it would be
+quite disappointing for the agents to have 1 chance out of 10\^{}4 to
+win. Model 1a has 10 winners for the phase 01, that is one per cluster.
+One can assume that cluster definition could be done by an unsupervised
+algorithm for clustering based on textual description of the solution,
+so there will be no need to request expert evaluations. In the second
+stage, the ideas are pooled together and the outcome is below the one of
+the first model, and the agents to reward are 14 (10 in the first stage
+and 4 in the second stage). Nonetheless, the cost for idea assessment
+are significantly lower, since there are only 15 possible combinations
+to evaluate. This validates our first testable proposition (P1).
+Moreover, Model 1b appears evident why it would not be wise to select
+the best idea for every cluster. Indeed, it would take the same amount
+of assessment as the same model to obtain the same result (in the second
+phase, the agent with the best idea cannot find anyone that can improve
+it).
+
+Finally, model 2 has been conceived to illustrate that with a large set
+of agents it would be theoretically possible to receive a number of
+ideas to assess that is greater than the initial number, although it is
+unlikely to occur in reality. This validates our second testable
+proposition (P2) under the condition that the number of retained ideas
+in the second idea challenge is not too large (although, one could
+choose to solve this problem by using idea clustering again).
+
+\section{5 Discussions}\label{discussions}
+
+In this section we assess our article by using the six guidelines for a
+design science paper of (A. Hevner et al. 2004). The first guideline
+states that design-science research must produce a viable artifact in
+the form of a construct, a model, a method, or an instantiation: our
+artefact is a model for a decentralized idea challenge, which uses
+tokenization in a blockchain to store ideas. The second guideline claims
+that the objective of design-science research is to develop
+technology-based solutions to important and relevant business problems.
+Our solution is based on a new technology and it addresses an increasing
+need for firms that seek to innovate. The third guideline reminds that
+the utility, quality, and efficacy of a design artifact must be
+rigorously demonstrated via well-executed evaluation methods. We have
+chosen to use agent-based simulation as a form of ex-ante artificial
+assessment, being aware of its advantages and shortcomings. The fourth
+guideline says that effective design-science research must provide clear
+and verifiable contributions in the areas of the design artifact, design
+foundations, and/or design methodologies. Our artefact builds on
+previous research on idea challenges and it extends it by offering
+design guidelines to implement it in a business context. The fifth
+guidelines suggests that design-science research relies upon the
+application of rigorous methods in both the construction and evaluation
+of the design artifact. In this paper we have illustrated the kernel
+theories that led to our solution and the underlying assumption in our
+evaluation. The sixth guideline concerns the search for an effective
+artifact that requires utilizing available means to reach desired ends
+while satisfying laws in the problem environment. Although the
+simulation has used a large set of agents to test the boundary
+conditions of our design theory, while building our model, we took into
+account the tools that a firm would have to create an idea challenge.
+Finally, the seventh guideline justify our choice of targeting this
+conference, since design-science research must be presented effectively
+both to technology-oriented as well as management-oriented audiences.
+This research project is currently ongoing and it has two major
+limitations. On the one hand, future research shall evaluate our model
+in a real context, by performing experimental tests with people solving
+the same problem while using different techniques. On the other hand, in
+a future paper we shall describe how to perform automatic idea
+clustering of the ideas by means of unsupervised algorithm that analyses
+the corpora of all the idea and performs text analysis. Nonetheless, our
+model already offers to small and big firms the possibility to exploit a
+new technology to manage idea challenges in an effective and efficient
+way, and it opens new directions for research, such as combining game
+theory to assess the payoff of agents playing different theories as well
+as exploring the other features of blockchain to improve the performance
+of open innovation.
+
+\section{6 Conclusion}\label{conclusion}
+
+In this paper we have proposed a method for exploiting tokenization as a
+way to identify, select, and create new ideas from contests, challenges,
+and crowdsourcing. The current proposals present a set of limitations,
+whose solution will be explored in future work. In particular, the
+assignment of values to ideas would require further investigation.
+Actually, imagining that each idea receives a grade of 1 to 9 on three
+dimensions, and the three dimensions have different weights (100, 10 and
+1), one can describe the value of the idea with numbers from 1 to 1000.
+The target will always be 9 * 10 \^{} n is the number of dimensions,
+because the customer would like to have everything at its best.
+Furthermore, in this paper we have considered 10 \^{} n + 1 to model the
+fact that the customer will never be satisfied. Another limitation is
+that the artefact is still at experimental level and the number of
+tested results is still too small for both justifying it and to have an
+explicit theory from it. As to this issue, in future work we are going
+to explore too different solutions that are, 1) to divide ideas into
+clusters (with a clustering algorithm) and take the first idea of each
+cluster, which allows to reduce the costs of evaluation drastically, and
+2) developing and analyzing a multiple-step challenge, which can
+increase the payoff for agents, at limited costs for the customer.
+Notwithstanding the current limitations, we believe that the method
+would represent a first step towards a full understanding of how to
+exploit the opportunities offered by technologies such as blockchain for
+open innovation, thus bridging the gap between technical and managerial
+perspectives characterizing the two state of the art stances with regard
+the two topics.
+
+\section{7 Annexes: R code of the agent-based
+simulation}\label{annexes-r-code-of-the-agent-based-simulation}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Setting up a function to generate ideas}
+\NormalTok{phase00 <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(target, totAgents, totIdeas, clusters) \{}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{) }\CommentTok{#Setting a seed to allow comparable results }
+\CommentTok{# this allows multiple ideas to one owner}
+\NormalTok{agentsId <-}
+\KeywordTok{as.integer}\NormalTok{(}\KeywordTok{rnorm}\NormalTok{(totIdeas, totAgents }\OperatorTok{/}\StringTok{ }\DecValTok{2}\NormalTok{, totAgents }\OperatorTok{/}\StringTok{ }\DecValTok{10}\NormalTok{)) }
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{) }\CommentTok{#Setting a seed again}
+\CommentTok{# Generating random numbers in a uniform distribution}
+\NormalTok{idea <-}
+\KeywordTok{as.integer}\NormalTok{(}\KeywordTok{runif}\NormalTok{(totIdeas, }\DataTypeTok{min =} \DecValTok{0}\NormalTok{, }\DataTypeTok{max =}\NormalTok{ target)) }
+\CommentTok{#Extracting the cluster by dividing each number to ... }
+\CommentTok{# ... the number of clusters}
+\NormalTok{ideaClusters <-}
+\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{as.integer}\NormalTok{(idea }\OperatorTok{/}\StringTok{ }\NormalTok{(target }\OperatorTok{/}\StringTok{ }\NormalTok{clusters)) }
+\NormalTok{agentsReward_}\DecValTok{01}\NormalTok{ <-}
+\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, totIdeas) }\CommentTok{# A variable associated to phase 01}
+\NormalTok{agentsReward_}\DecValTok{02}\NormalTok{ <-}
+\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, totIdeas) }\CommentTok{# A variable associated to phase 02}
+\CommentTok{#Creating a dataframe with ID, value and cluster}
+\NormalTok{ideas <-}
+\KeywordTok{data.frame}\NormalTok{(agentsId,}
+\NormalTok{idea,}
+\NormalTok{ideaClusters,}
+\NormalTok{agentsReward_}\DecValTok{01}\NormalTok{,}
+\NormalTok{agentsReward_}\DecValTok{02}\NormalTok{) }
+\KeywordTok{return}\NormalTok{(ideas)}
+\NormalTok{\}}
+\CommentTok{# Setting up a function to select ideas}
+\NormalTok{phase01 <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(clusters, ideas) \{}
+\CommentTok{#Creating a dataframe with Cluster ID, Winner ID and value}
+\NormalTok{idClusters <-}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{clusters)}
+\NormalTok{idWinners <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\OtherTok{NA}\NormalTok{, clusters)}
+\NormalTok{valueWinners <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\OtherTok{NA}\NormalTok{, clusters)}
+\NormalTok{listWinners <-}\StringTok{  }\KeywordTok{data.frame}\NormalTok{(idClusters, idWinners, valueWinners)}
+\NormalTok{lenIdeas <-}\StringTok{ }\KeywordTok{dim}\NormalTok{(ideas)[}\DecValTok{1}\NormalTok{]}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{lenIdeas) \{}
+\CommentTok{#Reward the owners of the selected ideas}
+\NormalTok{j <-}\StringTok{ }\NormalTok{ideas[i, }\DecValTok{3}\NormalTok{] }\CommentTok{# Check the cluster of the idea}
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{is.na}\NormalTok{(listWinners[j, }\DecValTok{2}\NormalTok{])) \{}
+\CommentTok{# If the cluster of the agent does not have a winner ...}
+\CommentTok{# ... (it's value is NA) ...}
+\NormalTok{listWinners[j, }\DecValTok{2}\NormalTok{] <-}\StringTok{ }\NormalTok{ideas[i, }\DecValTok{1}\NormalTok{] }\CommentTok{# ... use the agent's ID}
+\NormalTok{listWinners[j, }\DecValTok{3}\NormalTok{] <-}\StringTok{ }\NormalTok{ideas[i, }\DecValTok{2}\NormalTok{] }\CommentTok{# ... use the idea's value}
+\CommentTok{# rewarding the selected agent by increasing the reward to 1 }
+\CommentTok{# (taking into account multiple challenges)}
+\NormalTok{ideas[i, }\DecValTok{4}\NormalTok{] <-}
+\DecValTok{1} \OperatorTok{+}\StringTok{ }\NormalTok{ideas[i, }\DecValTok{4}\NormalTok{] }
+\NormalTok{\}}
+\NormalTok{\}}
+\KeywordTok{return}\NormalTok{(ideas)}
+\NormalTok{\}}
+\CommentTok{# Setting up a function to pool ideas}
+\NormalTok{phase02 <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{ (selectedIdeas, target) \{}
+\KeywordTok{library}\NormalTok{(lpSolve)}
+\NormalTok{ideas <-}\StringTok{ }\NormalTok{selectedIdeas}
+\CommentTok{#Filtering the list of winners before performing a left join ...}
+\CommentTok{# ... with the pooled ideas}
+\NormalTok{listWinners <-}
+\KeywordTok{filter}\NormalTok{(ideas, agentsReward_}\DecValTok{01} \OperatorTok{>}\StringTok{ }\DecValTok{0}\NormalTok{) }
+\CommentTok{# Trying to pool the retained ideas by looking for ...}
+\CommentTok{#... the best combination of coefficients}
+\NormalTok{objective.in <-}
+\NormalTok{listWinners[, }\DecValTok{2}\NormalTok{] }
+\CommentTok{# The sum of the pooled ideas ...}
+\NormalTok{mat <-}
+\KeywordTok{matrix}\NormalTok{(listWinners[, }\DecValTok{2}\NormalTok{], }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{) }
+\NormalTok{dir <-}\StringTok{ "<="} \CommentTok{# ... should be below ...}
+\NormalTok{rhs <-}\StringTok{ }\NormalTok{target }\CommentTok{# ... the target}
+\NormalTok{optimum <-}
+\KeywordTok{lp}\NormalTok{(}\DataTypeTok{direction =} \StringTok{"max"}\NormalTok{,}
+\NormalTok{objective.in,}
+\NormalTok{mat,}
+\NormalTok{dir,}
+\NormalTok{rhs,}
+\DataTypeTok{all.bin =} \OtherTok{TRUE}\NormalTok{) }\CommentTok{# Which is the best combination of pooled ideas?}
+\NormalTok{optimum}\OperatorTok{$}\NormalTok{solution }\CommentTok{# The selected ideas}
+\NormalTok{listWinners[, }\DecValTok{5}\NormalTok{] <-}\StringTok{ }\NormalTok{optimum}\OperatorTok{$}\NormalTok{solution }\CommentTok{#Assign prizes}
+\NormalTok{polledIdeas <-}\StringTok{ }\NormalTok{ideas }\OperatorTok{%>%}
+\KeywordTok{left_join}\NormalTok{(listWinners,}
+\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"agentsId"}\NormalTok{, }\StringTok{"idea"}\NormalTok{, }\StringTok{"ideaClusters"}\NormalTok{, }\StringTok{"agentsReward_01"}\NormalTok{))}
+\CommentTok{# Taking into account previous idea challenges}
+\NormalTok{agentsReward_}\DecValTok{02}\NormalTok{ <-}
+\NormalTok{polledIdeas}\OperatorTok{$}\NormalTok{agentsReward_}\FloatTok{02.}\NormalTok{x }\OperatorTok{+}\StringTok{ }\NormalTok{polledIdeas}\OperatorTok{$}\NormalTok{agentsReward_}\FloatTok{02.}\NormalTok{y }
+\NormalTok{polledIdeas <-}
+\KeywordTok{data.frame}\NormalTok{(polledIdeas, agentsReward_}\DecValTok{02}\NormalTok{) }\CommentTok{#add the new column}
+\NormalTok{polledIdeas[}\DecValTok{5}\NormalTok{] <-}\StringTok{ }\OtherTok{NULL} \CommentTok{# Removing the redundant columns}
+\NormalTok{polledIdeas[}\DecValTok{5}\NormalTok{] <-}\StringTok{ }\OtherTok{NULL} \CommentTok{# Removing the redundant columns}
+\KeywordTok{return}\NormalTok{(polledIdeas)}
+\NormalTok{\}}
+\CommentTok{# Setting up a function to summarize the rewards}
+\NormalTok{phase03 <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(ideas, target) \{}
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\NormalTok{agentsRewards <-}\StringTok{ }\NormalTok{ideas }\OperatorTok{%>%}
+\KeywordTok{gather}\NormalTok{(}\StringTok{'agentsReward_01'}\NormalTok{,}
+\StringTok{'agentsReward_02'}\NormalTok{,}
+\DataTypeTok{key =} \StringTok{"Phase"}\NormalTok{,}
+\DataTypeTok{value =} \StringTok{"Rewards"}\NormalTok{)}
+\NormalTok{winners <-}
+\KeywordTok{summarise}\NormalTok{(}\KeywordTok{group_by}\NormalTok{(agentsRewards, agentsId, idea),}
+\DataTypeTok{Rewards =} \KeywordTok{sum}\NormalTok{(Rewards, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{))}
+\NormalTok{winners <-}\StringTok{ }\KeywordTok{arrange}\NormalTok{(winners, idea) }\CommentTok{#Sorting ideas}
+\NormalTok{problemSolved <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{filter}\NormalTok{(winners, Rewards }\OperatorTok{>}\StringTok{ }\DecValTok{1}\NormalTok{)[, }\DecValTok{2}\NormalTok{])}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{filter}\NormalTok{(winners, Rewards }\OperatorTok{>}\StringTok{ }\DecValTok{0}\NormalTok{)) }\CommentTok{# Print results}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{mean}\NormalTok{(winners}\OperatorTok{$}\NormalTok{Rewards))}
+\KeywordTok{print}\NormalTok{(problemSolved)}
+\KeywordTok{print}\NormalTok{(target }\OperatorTok{-}\StringTok{ }\NormalTok{problemSolved)}
+\KeywordTok{return}\NormalTok{(agentsRewards)}
+\NormalTok{\}}
+\CommentTok{# Setting up a function to run an idea Challenge}
+\NormalTok{ideaChallenge <-}
+\ControlFlowTok{function}\NormalTok{(target,}
+\NormalTok{totAgents,}
+\NormalTok{totIdeas,}
+\NormalTok{clusters,}
+\NormalTok{sortedIdea) \{}
+\NormalTok{generatedIdeas <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{totIdeas))}
+\CommentTok{# Generating ideas}
+\NormalTok{generatedIdeas <-}
+\KeywordTok{phase00}\NormalTok{(target, totAgents, totIdeas, clusters) }
+\ControlFlowTok{if}\NormalTok{ (sortedIdea)}
+\NormalTok{generatedIdeas <-}
+\KeywordTok{arrange}\NormalTok{(generatedIdeas, }\KeywordTok{desc}\NormalTok{(idea)) }\CommentTok{# Sorting ideas by experts}
+\NormalTok{selectedIdeas <-}
+\KeywordTok{phase01}\NormalTok{(clusters, generatedIdeas) }\CommentTok{# Selecting ideas}
+\NormalTok{polledIdeas <-}\StringTok{ }\KeywordTok{phase02}\NormalTok{(selectedIdeas, target) }\CommentTok{# Polling ideas}
+\NormalTok{agentsRewards <-}\StringTok{ }\KeywordTok{phase03}\NormalTok{(polledIdeas, target)}
+\KeywordTok{return}\NormalTok{(agentsRewards)}
+\NormalTok{\}}
+\NormalTok{##RUN THE SIMULATION}
+\CommentTok{# MODEL 0. Standard idea challenge Benchmark}
+\NormalTok{target <-}\StringTok{ }\FloatTok{1e9} \CommentTok{# we set the target at 1'000'000'000}
+\NormalTok{totAgents <-}\StringTok{ }\FloatTok{1e3}
+\NormalTok{totIdeas <-}\StringTok{ }\FloatTok{1e4}
+\NormalTok{clusters <-}\StringTok{ }\DecValTok{1}
+\NormalTok{generatedIdeas0 <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{totIdeas))}
+\CommentTok{# Generating ideas}
+\NormalTok{generatedIdeas0 <-}
+\KeywordTok{phase00}\NormalTok{(target, totAgents, totIdeas, clusters) }
+\NormalTok{generatedIdeas0 <-}
+\KeywordTok{arrange}\NormalTok{(generatedIdeas0, }\KeywordTok{desc}\NormalTok{(idea)) }\CommentTok{#Sorting ideas by experts}
+\NormalTok{selectedIdeas0 <-}
+\KeywordTok{phase01}\NormalTok{(clusters, generatedIdeas0) }\CommentTok{# Selecting ideas}
+\NormalTok{agentsRewards0 <-}\StringTok{ }\NormalTok{selectedIdeas0 }\OperatorTok{%>%}
+\KeywordTok{gather}\NormalTok{(}\StringTok{'agentsReward_01'}\NormalTok{,}
+\StringTok{'agentsReward_02'}\NormalTok{,}
+\DataTypeTok{key =} \StringTok{"Phase"}\NormalTok{,}
+\DataTypeTok{value =} \StringTok{"Rewards"}\NormalTok{)}
+\NormalTok{winners <-}\StringTok{ }\KeywordTok{dim}\NormalTok{(}\KeywordTok{filter}\NormalTok{(agentsRewards0, Rewards }\OperatorTok{>}\StringTok{ }\DecValTok{0}\NormalTok{))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{quality <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(agentsRewards0, Rewards }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{)[, }\DecValTok{2}\NormalTok{]}
+\NormalTok{prize <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(agentsRewards0}\OperatorTok{$}\NormalTok{Rewards) }\OperatorTok{*}\StringTok{ }\NormalTok{totAgents}
+\NormalTok{challengeID <-}\StringTok{ "Single Winner"}
+\NormalTok{performance <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(challengeID, winners, quality, prize)}
+\NormalTok{performance}\OperatorTok{$}\NormalTok{winners }\CommentTok{# Winners}
+\NormalTok{performance}\OperatorTok{$}\NormalTok{quality }\CommentTok{# Sum of the pooled ideas}
+\NormalTok{performance}\OperatorTok{$}\NormalTok{prize }\CommentTok{# Cost of prizes}
+\CommentTok{# MODEL 1A: Selecting the first idea for each cluster}
+\NormalTok{target <-}\StringTok{ }\FloatTok{1e9} \CommentTok{# we set the target at 1'000'000'000}
+\NormalTok{totAgents <-}\StringTok{ }\FloatTok{1e3}
+\NormalTok{totIdeas <-}\StringTok{ }\FloatTok{1e4}
+\NormalTok{clusters <-}\StringTok{ }\DecValTok{10}
+\NormalTok{agentsRewards1_}\DecValTok{1}\NormalTok{ <-}
+\KeywordTok{ideaChallenge}\NormalTok{(target, totAgents, totIdeas, clusters, }\OtherTok{FALSE}\NormalTok{)}
+\CommentTok{# Model 1B: Selecting the idea for each cluster with ...}
+\CommentTok{#...the highest score}
+
+\CommentTok{#using sorted ideas}
+\NormalTok{agentsRewards2 <-}
+\KeywordTok{ideaChallenge}\NormalTok{(target, totAgents, totIdeas, clusters, }\OtherTok{TRUE}\NormalTok{) }
+\CommentTok{# MODEL 2: Cheatstorming}
+\NormalTok{target <-}\StringTok{ }\NormalTok{remainder1_}\DecValTok{1} \CommentTok{# New target}
+\NormalTok{generatedIdeas <-}\StringTok{ }\NormalTok{agentsRewards1_}\DecValTok{1} \OperatorTok{%>%}
+\KeywordTok{spread}\NormalTok{(}\DataTypeTok{key =}\NormalTok{ Phase, }\DataTypeTok{value =}\NormalTok{ Rewards)  }\CommentTok{# Spread the table}
+\NormalTok{generatedIdeas <-}
+\KeywordTok{filter}\NormalTok{(generatedIdeas, idea }\OperatorTok{<}\StringTok{ }\NormalTok{target) }\CommentTok{#Select ideas}
+\CommentTok{# New clusters}
+\NormalTok{generatedIdeas}\OperatorTok{$}\NormalTok{ideaClusters <-}
+\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{as.integer}\NormalTok{(generatedIdeas}\OperatorTok{$}\NormalTok{idea }\OperatorTok{/}\StringTok{ }\NormalTok{(target }\OperatorTok{/}\StringTok{ }\NormalTok{clusters))}
+\CommentTok{# Reward all contributions in phase 01}
+\NormalTok{generatedIdeas}\OperatorTok{$}\NormalTok{agentsReward_}\DecValTok{01}\NormalTok{ <-}
+\DecValTok{1} \OperatorTok{/}\StringTok{ }\KeywordTok{dim}\NormalTok{(generatedIdeas)[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{generatedIdeas}\OperatorTok{$}\NormalTok{agentsReward_}\DecValTok{01} 
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{is.na}\NormalTok{(generatedIdeas}\OperatorTok{$}\NormalTok{agentsReward_}\DecValTok{02}\NormalTok{)) \{}
+\NormalTok{generatedIdeas}\OperatorTok{$}\NormalTok{agentsReward_}\DecValTok{02}\NormalTok{ <-}\StringTok{ }\DecValTok{0} \CommentTok{# Remove NA from column 2}
+\NormalTok{\}}
+\NormalTok{selectedIdeas <-}\StringTok{ }\NormalTok{generatedIdeas}
+\NormalTok{pooledIdeas <-}\StringTok{ }\KeywordTok{phase02}\NormalTok{(selectedIdeas, target) }\CommentTok{# Pooling ideas}
+\CommentTok{# Check number of winners of phase}
+\NormalTok{agentsRewards <-}\StringTok{ }\KeywordTok{phase03}\NormalTok{(pooledIdeas, target)}
+\KeywordTok{filter}\NormalTok{(agentsRewards, Rewards }\OperatorTok{>=}\StringTok{ }\DecValTok{1}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\newpage
+
+\section*{8 References}\label{references}
+\addcontentsline{toc}{section}{8 References}
+
+\hypertarget{refs}{}
+\hypertarget{ref-afuah_crowdsourcing_2012}{}
+Afuah, Allan, and Christopher L. Tucci. 2012. ``Crowdsourcing as a
+Solution to Distant Search.'' \emph{Academy of Management Review} 37
+(3): 355--75.
+
+\hypertarget{ref-boudreau_using_2013}{}
+Boudreau, Kevin J., and Karim R. Lakhani. 2013. ``Using the Crowd as an
+Innovation Partner.'' \emph{Harvard Business Review} 91 (4): 60--69.
+
+\hypertarget{ref-bullinger_community-based_2010-1}{}
+Bullinger, Angelika C., Anne-Katrin Neyer, Matthias Rass, and Kathrin M.
+Moeslein. 2010. ``Community-Based Innovation Contests: Where Competition
+Meets Cooperation.'' \emph{Creativity and Innovation Management} 19 (3):
+290--303.
+
+\hypertarget{ref-chesbrough_explicating_2014}{}
+Chesbrough, Henry, and M. Borgers. 2014. ``Explicating Open Innovation:
+Clarifying an Emerging Paradigm for Understanding Innovation.'' In
+\emph{New Frontiers in Open Innovation}. Oup Oxford.
+
+\hypertarget{ref-chesbrough_open_2006}{}
+Chesbrough, Henry, Wim Vanhaverbeke, and J West. 2006. \emph{Open
+Innovation: Researching a New Paradigm}. Oxford: New York: Oxford Univ.
+Press. \url{https://doi.org/10.1111/j.1467-8691.2008.00502.x}.
+
+\hypertarget{ref-farmer_economy_2009}{}
+Farmer, J. Doyne, and Duncan Foley. 2009. ``The Economy Needs
+Agent-Based Modelling.'' \emph{Nature} 460 (7256): 685.
+
+\hypertarget{ref-faste_brainstorm_2013}{}
+Faste, Haakon, Nir Rachmel, Russell Essary, and Evan Sheehan. 2013.
+``Brainstorm, Chainstorm, Cheatstorm, Tweetstorm.'' In \emph{Proceedings
+of the SIGCHI Conference on Human Factors in Computing Systems - CHI
+'13}. \url{https://doi.org/10.1145/2470654.2466177}.
+
+\hypertarget{ref-felin_firms_2017}{}
+Felin, Teppo, Karim R. Lakhani, and Michael L. Tushman. 2017. ``Firms,
+Crowds, and Innovation.'' \emph{Strategic Organization} 15 (2): 119--40.
+
+\hypertarget{ref-gregor_positioning_2013}{}
+Gregor, S., and A.R. Hevner. 2013. ``Positioning and Presenting Design
+Science Research for Maximum Impact.'' \emph{MIS Quarterly} 37 (2):
+337--55.
+
+\hypertarget{ref-halaburda_blockchain_2018}{}
+Halaburda, H. 2018. ``Blockchain Revolution Without the Blockchain?''
+\emph{Communication of the ACM,} 61 (7): 27--29.
+
+\hypertarget{ref-hevner_design_2004}{}
+Hevner, Alan, Salvatore March, Jinsoo Park, and Sudha Ram. 2004.
+``Design Science in Information Systems Research.'' \emph{Management
+Information Systems Quarterly} 28 (1).
+\url{http://aisel.aisnet.org/misq/vol28/iss1/6}.
+
+\hypertarget{ref-lakhani_open_2012}{}
+Lakhani, Karim, Hila Lifshitz-Assaf, and Michael Tushman. 2012. ``Open
+Innovation and Organizational Boundaries: The Impact of Task
+Decomposition and Knowledge Distribution on the Locus of Innovation.''
+
+\hypertarget{ref-malone_handbook_2015}{}
+Malone, Thomas W., and Michael S. Bernstein. 2015. \emph{Handbook of
+Collective Intelligence}. MIT Press.
+
+\hypertarget{ref-march_design_1995}{}
+March, Salvatore T., and Gerald F. Smith. 1995. ``Design and Natural
+Science Research on Information Technology.'' \emph{Decision Support
+Systems} 15 (4): 251--66.
+
+\hypertarget{ref-nakamoto_bitcoin:_2008}{}
+Nakamoto, S. 2008. ``Bitcoin: A Peer-to-Peer Electronic Cash System.''
+\url{https://doi.org/10.1007/s10838-008-9062-0}.
+
+\hypertarget{ref-pries-heje_strategies_2008}{}
+Pries-Heje, Jan, Richard Baskerville, and John R. Venable. 2008.
+``Strategies for Design Science Research Evaluation.'' In \emph{ECIS},
+255--66.
+
+\hypertarget{ref-riedl_teams_2017}{}
+Riedl, Christoph, and Anita Williams Woolley. 2017. ``Teams Vs. Crowds:
+A Field Test of the Relative Contribution of Incentives, Member Ability,
+and Emergent Collaboration to Crowd-Based Problem Solving Performance.''
+\emph{Academy of Management Discoveries} 3 (4): 382--403.
+
+\hypertarget{ref-shrier_blockchain_2016}{}
+Shrier, D., W. Wu, and A. Pentland. 2016. ``Blockchain \& Infrastructure
+(Identity,data Security).'' \emph{MIT Connection Science \&
+Engineering,} May (3): 1--19.
+
+\hypertarget{ref-sun_cross-evaluation:_2006}{}
+Sun, Ying, and Paul B. Kantor. 2006. ``Cross-Evaluation: A New Model for
+Information System Evaluation.'' \emph{Journal of the American Society
+for Information Science and Technology} 57 (5): 614--28.
+
+\hypertarget{ref-swan_blockchain_2015}{}
+Swan, M. 2015. ``Blockchain Thinking\,: The Brain as a Decentralized
+Autonomous Corporation.'' \emph{IEEE Technology and Society Magazine}.
+\url{https://doi.org/10.1109/MTS.2015.2494358}.
+
+\hypertarget{ref-tapscott_this_2017}{}
+Tapscott, D. 2017. ``This Is How Block Chain Will Change Your Life.''
+\url{https://www.weforum.org/agenda/2016/06/this-is-how-blockchain-will-change-your-life/}.
+
+\hypertarget{ref-tapscott_blockchain_2016}{}
+Tapscott, D, and A Tapscott. 2016. \emph{Blockchain Revolution: How the
+Technology Behind Bitcoin Is Changing Money, Business, and the World}.
+Portfolio.
+
+\hypertarget{ref-r._core_team_r:_2013}{}
+Team, R. Core. 2013. ``R: A Language and Environment for Statistical
+Computing.''
+
+\hypertarget{ref-tilson_research_2010}{}
+Tilson, David, Kalle Lyytinen, and Carsten Sørensen. 2010. ``Research
+Commentary---Digital Infrastructures: The Missing IS Research Agenda.''
+\emph{Information Systems Research} 21 (4): 748--59.
+
+\hypertarget{ref-tucci_creating_2018}{}
+Tucci, Christopher L., Allan Afuah, and Gianluigi Viscusi. 2018.
+\emph{Creating and Capturing Value Through Crowdsourcing}. Oxford
+University Press.
+
+\hypertarget{ref-vanhaverbeke_classification_2014}{}
+Vanhaverbeke, Wim, and Henry Chesbrough. 2014. ``A Classification of
+Open Innovation and Open Business Models.'' In \emph{New Frontiers in
+Open Innovation}, edited by Henry Chesbrough, Wim Vanhaverbeke, and J
+West, 50--68.
+
+\hypertarget{ref-venable_comprehensive_2012}{}
+Venable, John R., Jan Pries-Heje, and Richard Baskerville. 2012. ``A
+Comprehensive Framework for Evaluation in Design Science Research.'' In
+\emph{International Conference on Design Science Research in Information
+Systems}, 423--38. Springer.
+
+\hypertarget{ref-viscusi_open_2015}{}
+Viscusi, Gianluigi, Diane Poulin, and Christopher Tucci. 2015. ``Open
+Innovation Research and E-Government: Clarifying the Connections Between
+Two Fields.'' In \emph{Proceedings of the XII Conference of the Italian
+Chapter of AIS (itAIS2015)}. Luiss University Press.
+
+\hypertarget{ref-woolley_collective_2015}{}
+Woolley, Anita Williams, Ishani Aggarwal, and Thomas W. Malone. 2015.
+``Collective Intelligence and Group Performance.'' \emph{Current
+Directions in Psychological Science} 24 (6): 420--24.
+
+\hypertarget{ref-yoo_tables_2013}{}
+Yoo, Youngjin. 2013. ``The Tables Have Turned: How Can the Information
+Systems Field Contribute to Technology and Innovation Management
+Research?'' \emph{Journal of the Association for Information Systems} 14
+(5): 227.
+
+\end{document}
+
+

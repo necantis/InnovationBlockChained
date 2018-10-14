@@ -77,7 +77,10 @@ set.seed(1) # Since we use random numbers, the seed seeting assures same results
 agents <- data.frame(Agent_ID = seq(1:agents_num), skill = as.integer(rpois(agents_num, levels/5)), career = as.integer(rpois(agents_num, levels/2)), target = as.integer(rnorm(agents_num, levels/2, levels/5)))
 
 ```
-Table 1 illustrates the results of an idea competition concerning how to reduce energy consumption in private households. For sake of simplicity, we will assume to obtain four ideas. Each idea receives a unique identification number, which is associated with the unique ID of the user (Step 1). Then, by means of automatic or manual classification, the ideas are assigned to clusters showing the “stance” of each idea: for example, “behavioural” vs. “technical” or “engineering” oriented idea (Step 2).  For sake of discussion, we can also assume that a set of evaluators give a score between 1 and 9 for each idea according to three dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is 1). Finally, the first idea of each cluster is selected, the selected players (065, 177 and 356) win a prize and are invited for phase 2.  
+Table 1 illustrates the results of an idea competition concerning how to reduce energy consumption in private households. For sake of simplicity, we will assume to obtain four ideas. 
+In the previous example, the target was 10^3, there were 3 agents that generated 4 ideas into 3 clusters in phase 01. Our simulation uses 10^9 as target, 10^3 agents, 10^4 ideas and 10 clusters.
+
+Each idea receives a unique identification number, which is associated with the unique ID of the user (Step 1). Then, by means of automatic or manual classification, the ideas are assigned to clusters showing the “stance” of each idea: for example, “behavioural” vs. “technical” or “engineering” oriented idea (Step 2).  For sake of discussion, we can also assume that a set of evaluators give a score between 1 and 9 for each idea according to three dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is 1). Finally, the first idea of each cluster is selected, the selected players (065, 177 and 356) win a prize and are invited for phase 2.  
 In the second phase, the players perform chainstorm and combine the ideas that passed phase 01, to produce new ideas. Table 2 shows the creation of two new ideas. In this step, the ideas are assessed by evaluators, who give a score between 1 and 9 for each idea according to three dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is 1).  For sake of illustration, we can assume that the score of two ideas in one dimension is the sum of the scores of the two individual ideas in that dimension. That allows us to predict the score of idea 005 and idea 006, and choose idea 686, since it maximizes the satisfaction of the client.  
 A standard idea challenge would have rewarded the best idea (in this case idea 003, with a score of 724). Nonetheless, that would require an expert assessment of all ideas, whereas our model allows assessing only the pooled ideas, which are the sum of possible combinations among ideas selected in phase 01. Hence, ideas to assess = {[1+(clusters/2)]*(cluster/2)]/2 
 That leads to the first design guideline for a decentralized idea challenge, which is associated with a testable proposition.  
@@ -92,39 +95,118 @@ That leads to the second design guideline for a decentralized idea challenge, wh
 We use R Statistical package  @r._core_team_r:_2013 to write an agent-based simulation, that is a computerized simulation of a number of decision-makers (agents), which interact through prescribed rules [@farmer_economy_2009]. Our code has four functions, corresponding to the following phases: 
 ```{r simSetup}
 # Setup
-agents_num <- 50
-clients_num <- 50
-experts_num <- 50
+agents_num <- 10
+clients_num <- 10
+experts_num <- 10
+ideas_num <- 100
 
-market_dim <- 50
-product_dim <- 50
-ideas <- 100
-
-mentoring_sessions <- data.frame(NA)
-
-challenges_num <- 100 # how many iterations done
+market_dim <- 5 # skill types concerning the market
+product_dim <- 5 # skill types concerning the product
 levels <- 100 # Setting the maximum skills per dimension
 
+challenges_num <- 100 # how many iterations done
+idea_challenge_num <- 10 # how many ideas per challenge
+
+
 ```
--	phase 00 generates the agents and it assigns one or more ideas to each agent. It takes as initial parameters the whole set of possible market dimensions assessed by the client (=`r market_dim`), the whole set of possible market dimensions assessed by the client (=`r product_dim`), the number of clients (=`r clients_num`), the number of experts (=`r experts_num`), the number of agents (=`r agents_num`), the maximum skill level per dimension (=`r levels`) and the number of challenges (=`r challenges_num`). In the previous example, the target was 10^3, there were 3 agents that generated 4 ideas into 3 clusters in phase 01. Our simulation uses 10^9 as target, 10^3 agents, 10^4 ideas and 10 clusters.
+-	phase 00 generates the agents and it assigns one or more ideas to each agent. It takes as initial parameters the whole set of possible market dimensions assessed by the client (*market_dim*=`r market_dim`), the whole set of possible market dimensions assessed by the client (*product_dim*=`r product_dim`), the number of clients (*clients_num*=`r clients_num`), the number of experts (=`r experts_num`), the number of agents (*agents_num*=`r agents_num`), the maximum skill level per dimension (*levels*=`r levels`) and the number of challenges (*challenges_num*=`r challenges_num`). 
 
-```{r init}
+```{r agents_Tables}
+# Since we use random numbers ...
+# ... the seed seeting assures the same results every time
+set.seed(1) 
 
-set.seed(1) # Since we use random numbers, the seed seeting assures same results every time
-agents <- data.frame(Agent_ID = seq(1:agents_num), s_pro_01 = as.integer(rpois(agents_num, levels/10)), s_pro_02 = as.integer(rpois(agents_num, levels/10)), s_pro_03 = as.integer(rpois(agents_num, levels/10)), s_mkt_01 = as.integer(rpois(agents_num, levels/10)), s_mktt_02 = as.integer(rpois(agents_num, levels/10)), s_mkt_03 = as.integer(rpois(agents_num, levels/10)), money = rep(0,agents_num))
+createAgents<- function(agents_num, product_dim, market_dim, minSkill_1, minSkill_2, maxSkills, levels){
 
+  #Creating a temporary matrix with product skills of the agent
+  s_pro <- matrix(, nrow = agents_num, ncol = product_dim)
+#Creating a temporary matrix with market skills of the agent  
+  s_mkt <- matrix(, nrow = agents_num, ncol = market_dim)
+
+#Assigning numbers from uniform distribution to agents' product skills set  
+  for(i in 1:product_dim){
+  if(is.data.frame(maxSkills)){
+    #Use the skill sets as maximum numbers
+    s_pro[,i] <- as.integer(runif(agents_num,
+                                  min=minSkill_1, 
+                                  maxSkills[,i]
+                                  )
+                            )
+  }else{
+    #If there is no skill set, use all the range
+    s_pro[,i] <- as.integer(runif(agents_num, 
+                                min=minSkill_1, 
+                                max=levels
+                                )
+                          )
+  }
+}  
+#Assigning numbers from uniform distribution to agents' market skills set  
+  for(i in 1:market_dim){
+    #If there is a list of agent's skill sets ...
+  if(is.data.frame(maxSkills)){
+    #Use the skill sets as maximum numbers
+    s_mkt[,i] <- as.integer(runif(agents_num,
+                                  min=minSkill_2, 
+                                  maxSkills[,i+product_dim]
+                                  )
+                            )
+  }else{
+    #If there is no skill set, use all the range
+    s_mkt[,i] <- as.integer(runif(agents_num, 
+                                min=minSkill_2, 
+                                max=levels
+                                )
+                          )
+    }
+    
+  }
+
+#Combining results into one dataframe    
+  return(data.frame(
+    UID=seq(1:agents_num),
+    s_pro,
+    s_mkt,
+    money = rep(0,agents_num)
+    )
+  )
+}
+
+
+agents <- createAgents(agents_num, product_dim, market_dim, 0, 0, levels, levels)  
+colnames(agents)[1]<-"Agent_ID"
 head(agents)
 
-experts <- data.frame(Expert_ID = seq(1:agents_num), s_pro_01 = as.integer(rpois(agents_num, levels/2)), s_pro_02 = as.integer(rpois(agents_num, levels/2)), s_pro_03 = as.integer(rpois(agents_num, levels/2)), s_mkt_01 = as.integer(rpois(agents_num, levels/10)), s_mktt_02 = as.integer(rpois(agents_num, levels/10)), s_mkt_03 = as.integer(rpois(agents_num, levels/10)), money = rep(0,agents_num))
+experts <- createAgents(experts_num, product_dim, market_dim, 50, 0, levels, levels)
+colnames(experts)[1]<-"Expert_ID"
+# head(experts)
 
-head(experts)
-
-clients <- data.frame(Client_ID = seq(1:agents_num), s_pro_01 = as.integer(rpois(agents_num, levels/10)), s_pro_02 = as.integer(rpois(agents_num, levels/10)), s_pro_03 = as.integer(rpois(agents_num, levels/10)), s_mkt_01 = as.integer(rpois(agents_num, levels/2)), s_mktt_02 = as.integer(rpois(agents_num, levels/2)), s_mkt_03 = as.integer(rpois(agents_num, levels/2)), money = rep(0,agents_num))
-
-head(clients)
-
+clients <- createAgents(clients_num, product_dim, market_dim, 0, 50, levels, levels)
+colnames(clients)[1]<-"Client_ID"
+# head(clients)
 ```
 
+
+```{r ideas_Table}
+#Assigning ideas to agents
+Agent_ID <- data.frame("Agent_ID"=sample(agents$Agent_ID, ideas_num, replace=TRUE))
+#The skill of an idea cannot be greater than its agent's skill
+skills <- left_join(Agent_ID, agents, by ="Agent_ID")
+  skills <- skills[,-1] #Removing the UID column after left join
+#Using the createAgents function + adding one column for the second key
+ideas <- data.frame(Agent_ID, createAgents(ideas_num, product_dim, market_dim, 0,0, skills, levels))
+colnames(ideas)[2] <- "Idea_ID"
+head(ideas)
+
+
+#Assigning ideas to challenges
+Idea_ID <- data.frame("Idea_ID"=sample(ideas$Agent_ID, ideas_num, replace=TRUE))
+
+
+Expert_ID <- data.frame("Expert_ID"=sample(experts$Expert_ID, ideas_num, replace=TRUE))
+
+
+```
 
 -	phase 01 divides the ideas into clusters and retains one idea per cluster. We shall compare the case when the winner for each cluster is the first one (model A) or the one with the idea that has the greatest value (model B).
 -	phase 02 selects and combines the retained idea into the best idea pool.  This is a problem of linear programming that tries to maximizes the sum of the ideas by defining that the coefficient of each idea is binary (either we select it or not) and by setting one constraint (the sum of the pooled idea cannot be greater than the target).

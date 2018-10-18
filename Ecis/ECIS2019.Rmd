@@ -60,29 +60,272 @@ The rest of the paper proceeds as it follows. In section 2 we briefly review the
 =============
 In this section, we briefly review existing literature on management literature concerning different solutions to decentralize the innovation process.  
 In the last decade, open innovation [@chesbrough_explicating_2014] has been more and more considered by private as well as public organizations [@viscusi_open_2015]  as a way to obtain competitive advantage through the exploitation of the opportunities and capabilities offered by digitalization [@tilson_research_2010; @yoo_tables_2013] and exploration of alternative solutions to research and development. Among the phenomena related to open innovation the tokenization of work and the adoption of collective contests for ideas searching and problem solving through crowdsourcing [@afuah_crowdsourcing_2012; @tucci_creating_2018; @boudreau_using_2013; @felin_firms_2017] received an increasing attention as a way to exploit collective intelligence for innovation as well as to improve performance of organizations [@malone_handbook_2015; @woolley_collective_2015 ,@riedl_teams_2017]. 
-Taking these issues into account, web-based idea competitions such as Innocentive has already been proven successful at gathering a large set of solvers to address complex problems [@lakhani_open_2012]. @bullinger_community-based_2010-1 have reviewed 52 publications on ideas competition and identified 10 design elements for ideas competition, noticing the most common combination is: an (1) online idea competition (2) initiated by a firm (3) that sets a medium amount of specificity concerning the required tasks, which can range from (4) ideas, sketches, concepts, prototype, and working solution, for a (5) specific target group of (6) individuals that (7) competes and cooperates thanks to community functions in the online platform, for (8) a large amount of time, (9) in exchange of a mix between monetary and non-monetary rewards that are given by (10) a jury of experts. With respect to the process used to generate ideas, we refer to @faste_brainstorm_2013, who compared classic brainstorming with two new solutions: (a) chainstorming, where participants have to use ideas from a previous brainstorming to solve a new problem and (b) cheatstorming, where participants cannot use new ideas and can only use ideas from previous brainstorming. Since performance of cheatstorming seems to outperform the other options, the authors suggested that idea generation is less about idea and more about dealing with cultural influence exerted by unconventional ideas on the ideating team. Therefore, tokenization could be used to list the ideas submitted and rewards those that are winning as well as those that are reused, as long as a way to regroup similar ideas in a decentralized fashion.  
+Taking these issues into account, web-based idea competitions such as Innocentive has already been proven successful at gathering a large set of solvers to address complex problems [@lakhani_open_2012]. @bullinger_community-based_2010-1 have reviewed 52 publications on ideas competition and identified 10 design elements for ideas competition, noticing the most common combination is: an (1) online idea competition (2) initiated by a firm (3) that sets a medium amount of specificity concerning the required tasks, which can range from (4) ideas, sketches, concepts, prototype, and working solution, for a (5) specific target group of (6) individuals that (7) competes and cooperates thanks to community functions in the online platform, for (8) a large amount of time, (9) in exchange of a mix between monetary and non-monetary rewards that are given by (10) a jury of experts. With respect to the process used to generate ideas, we refer to @faste_brainstorm_2013, who compared classic brainstorming with two new solutions: (a) chainstorming, where solvers have to use ideas from a previous brainstorming to solve a new problem and (b) cheatstorming, where solvers cannot use new ideas and can only use ideas from previous brainstorming. Since performance of cheatstorming seems to outperform the other options, the authors suggested that idea generation is less about idea and more about dealing with cultural influence exerted by unconventional ideas on the ideating team. Therefore, tokenization could be used to list the ideas submitted and rewards those that are winning as well as those that are reused, as long as a way to regroup similar ideas in a decentralized fashion.  
 
 3 Methodology
 =============
 In this section we illustrate the chosen methodology to answer our research question. We position our study in the field of design science research [@hevner_design_2004] and we developed an artefact under the shape of a method, as defined by @march_design_1995. Accordingly, we have followed the guidelines of @gregor_positioning_2013 to create a set of design principles as part of a nascent design theory, which is at level 2 of the contribution types. Finally, we have selected simulation as an experimental way to test our assumptions ex-ante in a setting that allowed to control the variables.   Artificial  evaluation  can be seen as unreal  due to (a) unreal  users,  (b) unreal  systems,  and  (c)  unreal  problems  since it is not  held  by  the users and/or not real tasks, etc.[@sun_cross-evaluation:_2006]. Nonetheless, @pries-heje_strategies_2008[@venable_comprehensive_2012] recommend to use this type of artificial evaluation as an ex-ante assessment of the system, before testing it on larger scale with real users (naturalistic evaluations).  
+
 In what follows we present our artefact in the shape of a method composed of four phases, as shown in figure 1, and we illustrate how it works by a simple example. 
 
 ```{r simDemo}
 # Setup
-participants_num <- 3
-clients_num <- 1
-experts_num <- 2
+solvers_num <- 5
+clients_num <- 3
+experts_num <- 5
+ideas_num <- 100
 
-market_dim <- 2
-product_dim <- 2
-ideas <- 2
-
-challenges_num <- 1 # how many iterations done
+market_dim <- 2 # skill types concerning the market
+product_dim <- 2 # skill types concerning the product
 levels <- 100 # Setting the maximum skills per dimension
+expert_skill <- 50 #minimum skill of experts
+
+challenges_num <- 3 # iterations done
+idea_challenge_num <- 10 # max ideas per challenge
+expert_challenge_num <- 2 # experts per challenge
+
+reward <- 10 #reward per challenge
 
 ```
 Table 1 illustrates the results of an idea competition concerning how to reduce energy consumption in private households. For sake of simplicity, we will assume to obtain four ideas. 
-In the previous example, the target was 10^3, there were 3 agents that generated 4 ideas into 3 clusters in phase 01. Our simulation uses 10^9 as target, 10^3 agents, 10^4 ideas and 10 clusters.
+In the previous example, there were `r solvers_num` solvers that generated `r idea_challenge_num` ideas for `r challenges_num` idea challenge. 
+
+```{r agents_Tables}
+# Since we use random numbers ...
+# ... the seed seeting assures the same results every time
+set.seed(1) 
+
+createAgents<- function(prefix_letter, agents_num, product_dim, market_dim, minSkill_1, minSkill_2, maxSkills, levels){
+
+  #Creating a temporary matrix with product skills of the agent
+  s_pro <- data.frame(matrix(, nrow = agents_num, ncol = product_dim))
+#Creating a temporary matrix with market skills of the agent  
+  s_mkt <- data.frame(matrix(, nrow = agents_num, ncol = market_dim))
+  
+#Assigning numbers from uniform distribution to agents' product skills set  
+for(i in 1:product_dim){
+  if(is.data.frame(maxSkills)){
+    #Use the skill sets as maximum numbers
+    s_pro[,i] <- round(runif(agents_num,
+                                  min=minSkill_1, 
+                                  maxSkills[,i]
+                                  )
+                            )
+   colnames(s_pro)[i]<-paste(c("P",i),collapse="")
+  }else{
+    #If there is no skill set, use all the range
+    s_pro[,i] <- round(runif(agents_num, 
+                                min=minSkill_1, 
+                                max=levels
+                                )
+                          )
+    colnames(s_pro)[i]<-paste(c("P",i),collapse="")
+  }
+}  
+#Assigning numbers from uniform distribution to agents' market skills set  
+  for(i in 1:market_dim){
+    #If there is a list of agent's skill sets ...
+  if(is.data.frame(maxSkills)){
+    #Use the skill sets as maximum numbers
+    s_mkt[,i] <- round(runif(agents_num,
+                                  min=minSkill_2, 
+                                  maxSkills[,i+product_dim]
+                                  )
+                            )
+    colnames(s_mkt)[i]<-paste(c("B",i),collapse="")
+    }else{
+    #If there is no skill set, use all the range
+    s_mkt[,i] <- round(runif(agents_num, 
+                                min=minSkill_2, 
+                                max=levels
+                                )
+                          )
+    colnames(s_mkt)[i]<-paste(c("B",i),collapse="")
+    }
+    
+  }
+
+UID = NA
+for(i in 1:agents_num){
+  UID[i]=paste(c(prefix_letter,i), collapse = "")
+}
+
+#Combining results into one dataframe    
+  return(data.frame(
+    UID,
+    s_pro,
+    s_mkt
+    )
+  )
+}
+```
+-	phase 00 starts by generating the three types of agents: (1) clients, (2) experts and (3) challenge participants. 
+
+To create agents participating to the idea challenges (hereinafter referred to as *solvers*), the system takes as initial parameters the whole set of possible market dimensions assessed by the client (*market_dim*=`r market_dim`), the whole set of possible market dimensions assessed by the client (*product_dim*=`r product_dim`), the maximum skill level per dimension (*levels*=`r levels`), the number of solvers (*solvers_num*=`r solvers_num`).  
+
+```{r solvers_Table}
+
+solvers <- data.frame(createAgents("S", solvers_num, product_dim, market_dim, 0, 0, levels, levels))  
+colnames(solvers)[1]<-"Solver_ID"
+
+#extra lines for example
+colnames(solvers)[2:dim(solvers)[2]]<-c("Engineering","Finance","Construction", "Electronics")
+solvers <- data.frame("Name"=c("Arnold","Boris","Carla","Damien","Esteban"),solvers)
+
+kable(solvers) 
+
+# round(colMeans(solvers[,3:6]))
+```
+
+To create agents as experts, the system takes the overall number of experts (=`r experts_num`) and it sets the minimum skill for *product* dimensions at `r expert_skill`/`r levels`.  
+
+```{r experts_Table}
+experts <- createAgents("E",experts_num, product_dim, market_dim, expert_skill, 0, levels, levels)
+colnames(experts)[1]<-"Expert_ID"
+
+#extra lines for example
+colnames(experts)[2:dim(experts)[2]]<-colnames(solvers)[3:dim(solvers)[2]]
+experts <- data.frame("Name"=c("Alice","Bob","Charlie","Daniela","Eric"),experts)
+
+kable(experts)
+# round(colMeans(experts[,3:6]))
+```
+
+To create agents as clients, the system uses the number of clients (*clients_num*=`r clients_num`), and it sets the minimum skill for *business* dimensions at `r expert_skill`/`r levels`.  
+ 
+```{r clients_Table}
+clients <- createAgents("C", clients_num, product_dim, market_dim, 0, expert_skill, levels, levels)
+colnames(clients)[1]<-"Client_ID"
+
+#extra lines for example
+colnames(clients)[2:dim(clients)[2]]<-colnames(solvers)[3:dim(solvers)[2]]
+clients <- data.frame("Name"=c("Anais","Bodgan","Charles"),clients)
+
+kable(clients)
+# round(colMeans(clients[,3:6]))
+```
+
+-	phase 01 creates an idea challenge by assigning ideas to a random pool of solvers (one solver can have multiple ideas in the same idea challenge).
+```{r ideas_Table}
+
+check_skills <- function(solvers,idea_challenge_num, product_dim, market_dim, levels){
+# Assigning the ideas to a random pool of solvers
+# By using Replace, a solver can have more than one idea
+Solver_ID <- data.frame("Solver_ID"=sample(solvers$Solver_ID, idea_challenge_num, replace=TRUE))
+
+#The skill of an idea cannot be greater than its creator's skill
+skills <- left_join(Solver_ID, solvers, by ="Solver_ID")
+  skills <- skills[,-1] #Removing the UID column after left join
+  skills <- skills[,-1] #Removing the solver_name column after left join
+
+#Using the createAgents function + adding one column for the second key
+ideas <- data.frame(Solver_ID, createAgents("I",idea_challenge_num, product_dim, market_dim, 0, 0, skills, levels)) 
+colnames(ideas)[2] <- "Idea_ID"
+
+ideas
+}
+
+ideas <- check_skills(solvers,idea_challenge_num, product_dim, market_dim, levels)
+#extra lines for example
+colnames(ideas)[3:dim(ideas)[2]]<- colnames(solvers)[3:dim(experts)[2]]
+ideas$Prize <-0
+
+kable(ideas)
+# round(colMeans(ideas[,3:6]))
+```
+
+- In phase 02, a client and `r expert_challenge_num` experts assess the ideas of the solvers. 
+Each agent (client or expert) can only appreciate an idea up to his/her skill.  
+Hence, if P1 of an idea is 99 and the P1 of an agent is 9, the score of the idea for P1 is 9.  
+```{r assessment_Table}
+
+assessIdea <- function(ideas, clients, experts, expert_challenge_num){
+  
+ideas_individual_scores <- data.frame(matrix(, nrow = dim(ideas)[1], ncol = dim(ideas)[2]))
+colnames(ideas_individual_scores) <- c("Agent_ID",colnames(ideas[,2:dim(ideas)[2]]))
+
+ideas_overall_scores <- data.frame(matrix(, nrow = dim(ideas)[1], ncol = dim(ideas)[2]))
+colnames(ideas_overall_scores) <- c("Agent_ID",colnames(ideas[,2:dim(ideas)[2]]))
+
+#Adding a random client to each challenge
+selected_client <- clients %>%
+  filter(Client_ID == sample(clients$Client_ID,1))
+
+#Adding the agent name and idea ID outside the for loop to preserve strings
+ideas_overall_scores$Agent_ID <- selected_client$Client_ID
+ideas_overall_scores$Idea_ID <- ideas$Idea_ID
+
+# The client assesses the ideas with a cognitive bias
+for(i in 1:dim(ideas)[1]){
+  ideas_overall_scores[i,3:6] <- as.numeric(pmin(ideas[i,3:6],selected_client[1,3:6]))
+}
+
+# #Extra: This column becomes a character
+# ideas_overall_scores$`Electronics business`<-as.numeric(ideas_overall_scores$`Electronics business`)
+
+# Adding a set of random experts to each challenge (no REPLACE)
+set.seed(3)
+selected_experts <- experts %>%
+  filter(Expert_ID == sample(experts$Expert_ID,expert_challenge_num))
+
+#Adding assessments from experts
+for(j in 1:expert_challenge_num){
+  ideas_individual_scores$Agent_ID <- selected_experts[j,]$Expert_ID
+  ideas_individual_scores$Idea_ID <- ideas$Idea_ID
+
+  for(i in 1:dim(ideas)[1]){
+    ideas_individual_scores[i,3:6] <- as.numeric(pmin(ideas[i,3:6],selected_experts[j,3:6]))
+  }
+  
+  ideas_overall_scores <- union(ideas_overall_scores,ideas_individual_scores)
+  
+}
+
+ideas_assessment <- ideas_overall_scores%>%
+  group_by(Idea_ID)%>%
+  summarise_all(mean)
+#  summarise(Engineering=round(mean(Engineering)),Finance=round(mean(Finance)), Construction=round(mean(Construction)), Electronics=round(mean(Electronics)))
+
+ideas_assessment <- as.integer(ideas_assessment[,-2])
+ideas_assessment$score <- round(rowMeans(ideas_assessment[,2:5]))
+
+ideas_assessment<- ideas_assessment%>%
+  arrange(desc(score))
+
+ideas_assessment
+}
+
+ideas_assessment <- assessIdea(ideas, clients, experts, expert_challenge_num)
+
+kable(ideas_assessment) 
+
+# round(colMeans(ideas_assessment[,2:5]))
+
+```
+
+-	phase 03 rewards the best idea with a prize of `r reward` points. 
+
+```{r rewards_Table}
+#Obtaining the ID of the winning idea 
+winner_idea <- ideas$Idea_ID == head(ideas_assessment,1)$Idea_ID
+
+#rewarding the idea with the winning ID
+ideas[winner_idea,]$Prize <- ideas[winner_idea,]$Prize+ reward
+
+kable(ideas)
+
+
+```
+
+
+
+**TO DO:**
+
+*Under the assumption of adverse selection, the experts are allowed to evaluate only product dimensions and the client only business dimensions.*  
+
+*Under the assumption of near-knightian uncertainty, the business scores of the winning idea are transfered to the client, who learns about new business dimensions.*  
+
+*Under the assumption of creative-destruction, the scores of the winning idea are trasfered to all solvers of the challenge, making it harder for the winner to win again with the same idea.*  
 
 Each idea receives a unique identification number, which is associated with the unique ID of the user (Step 1). Then, by means of automatic or manual classification, the ideas are assigned to clusters showing the “stance” of each idea: for example, “behavioural” vs. “technical” or “engineering” oriented idea (Step 2).  For sake of discussion, we can also assume that a set of evaluators give a score between 1 and 9 for each idea according to three dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is 1). Finally, the first idea of each cluster is selected, the selected players (065, 177 and 356) win a prize and are invited for phase 2.  
 In the second phase, the players perform chainstorm and combine the ideas that passed phase 01, to produce new ideas. Table 2 shows the creation of two new ideas. In this step, the ideas are assessed by evaluators, who give a score between 1 and 9 for each idea according to three dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is 1).  For sake of illustration, we can assume that the score of two ideas in one dimension is the sum of the scores of the two individual ideas in that dimension. That allows us to predict the score of idea 005 and idea 006, and choose idea 686, since it maximizes the satisfaction of the client.  
@@ -99,7 +342,7 @@ That leads to the second design guideline for a decentralized idea challenge, wh
 We use R Statistical package  @r._core_team_r:_2013 to write an agent-based simulation, that is a computerized simulation of a number of decision-makers (agents), which interact through prescribed rules [@farmer_economy_2009]. Our code has four functions, corresponding to the following phases: 
 ```{r simSetup}
 # Setup
-participants_num <- 5
+solvers_num <- 5
 clients_num <- 3
 experts_num <- 5
 ideas_num <- 100
@@ -115,178 +358,29 @@ expert_challenge_num <- 2 # experts per challenge
 
 reward <- 10 #reward per challenge
 ```
--	phase 00 starts by generating the three types of agents: (1) clients, (2) experts and (3) challenge participants. 
 
+```{r intial_setup}
+solvers <- data.frame(createAgents("S", solvers_num, product_dim, market_dim, 0, 0, levels, levels))  
+colnames(solvers)[1]<-"Solver_ID"
+solvers <- data.frame(solvers$Solver_ID,solvers)
 
-```{r agents_Tables}
-# Since we use random numbers ...
-# ... the seed seeting assures the same results every time
-set.seed(1) 
-
-createAgents<- function(agents_num, product_dim, market_dim, minSkill_1, minSkill_2, maxSkills, levels){
-
-  #Creating a temporary matrix with product skills of the agent
-  s_pro <- matrix(, nrow = agents_num, ncol = product_dim)
-#Creating a temporary matrix with market skills of the agent  
-  s_mkt <- matrix(, nrow = agents_num, ncol = market_dim)
-  
-#Assigning numbers from uniform distribution to agents' product skills set  
-  for(i in 1:product_dim){
-  if(is.data.frame(maxSkills)){
-    #Use the skill sets as maximum numbers
-    s_pro[,i] <- round(runif(agents_num,
-                                  min=minSkill_1, 
-                                  maxSkills[,i]
-                                  )
-                            )
-#    colnames(s_pro)[i]<-paste(c("P",i),collapse="")
-  }else{
-    #If there is no skill set, use all the range
-    s_pro[,i] <- round(runif(agents_num, 
-                                min=minSkill_1, 
-                                max=levels
-                                )
-                          )
-  }
-}  
-#Assigning numbers from uniform distribution to agents' market skills set  
-  for(i in 1:market_dim){
-    #If there is a list of agent's skill sets ...
-  if(is.data.frame(maxSkills)){
-    #Use the skill sets as maximum numbers
-    s_mkt[,i] <- round(runif(agents_num,
-                                  min=minSkill_2, 
-                                  maxSkills[,i+product_dim]
-                                  )
-                            )
-  }else{
-    #If there is no skill set, use all the range
-    s_mkt[,i] <- round(runif(agents_num, 
-                                min=minSkill_2, 
-                                max=levels
-                                )
-                          )
-    }
-    
-  }
-
-#Combining results into one dataframe    
-  return(data.frame(
-    UID=seq(1:agents_num),
-    s_pro,
-    s_mkt,
-    money = rep(0,agents_num)
-    )
-  )
-}
-```
-
-
-To create agents participating to the idea challenges, the system takes as initial parameters the whole set of possible market dimensions assessed by the client (*market_dim*=`r market_dim`), the whole set of possible market dimensions assessed by the client (*product_dim*=`r product_dim`), the maximum skill level per dimension (*levels*=`r levels`), the number of participants (*participants_num*=`r participants_num`).  
-
-```{r participants_Table}
-
-participants <- createAgents(participants_num, product_dim, market_dim, 0, 0, levels, levels)  
-colnames(participants)[1]<-"Part_ID"
-
-kable(participants) 
-```
-
-To create agents as experts, the system takes the overall number of experts (=`r experts_num`) and it sets the minimum skill for *product* dimensions at `r expert_skill`/`r levels`.  
-
-```{r experts_Table}
-experts <- createAgents(experts_num, product_dim, market_dim, expert_skill, 0, levels, levels)
+experts <- createAgents("E",experts_num, product_dim, market_dim, expert_skill, 0, levels, levels)
 colnames(experts)[1]<-"Expert_ID"
-experts%>%
-     kable()
-```
+experts <- data.frame(experts$Expert_ID,experts)
 
-
-To create agents as clients, the system he number of clients (*clients_num*=`r clients_num`), and it sets the minimum skill for *business* dimensions at `r expert_skill`/`r levels`.  
- 
-```{r clients_Table}
-clients <- createAgents(clients_num, product_dim, market_dim, 0, expert_skill, levels, levels)
+clients <- createAgents("C", clients_num, product_dim, market_dim, 0, expert_skill, levels, levels)
 colnames(clients)[1]<-"Client_ID"
-clients%>%
-     kable()
+clients <- data.frame(clients$Client_ID,clients)
 ```
+  
+```{r run_idea_challenges}
 
--	phase 01 creates an idea challenge by assigning ideas to a random pool of participants (one participant can have multiple ideas in the same idea challenge).
-```{r ideas_Table}
-# getIdeas <- function(participants,ideas_num,product_dim, market_dim, levels){
-# 
-# participants_num <- dim(participants)[1]
+ideas <- check_skills(solvers,idea_challenge_num, product_dim, market_dim, levels)
 
-# Assigning the ideas to a random pool of participants
-# By using Replace, a participant can have more than one idea
-Participant_ID <- data.frame("Part_ID"=sample(participants$Part_ID, idea_challenge_num, replace=TRUE))
-
-#The skill of an idea cannot be greater than its creator's skill
-skills <- left_join(Participant_ID, participants, by ="Part_ID")
-  skills <- skills[,-1] #Removing the UID column after left join
-
-#Using the createAgents function + adding one column for the second key
-ideas <- data.frame(Participant_ID, createAgents(idea_challenge_num, product_dim, market_dim, 0,0, skills, levels))
-colnames(ideas)[2] <- "Idea_ID"
-kable(ideas)
-
-# }
-```
-
-- In phase 02, a client and `r expert_challenge_num` experts assess the ideas of the participants. 
-Each agent (client or expert) can only appreciate an idea up to his/her skill.  
-Hence, if P1 of an idea is 99 and the P1 of an agent is 9, the score of the idea for P1 is 9.  
-```{r assessment_Table}
-ideas_scores <- data.frame(matrix(, nrow = dim(ideas)[1], ncol = dim(ideas)[2]-2))
-colnames(ideas_scores) <- colnames(ideas[,3:dim(ideas)[2]])
-#Adding a random client to each challenge
-selected_client <- clients %>%
-  filter(Client_ID==sample(clients$Client_ID,1))
-
-# The client assesses the ideas with a cognitive bias
-for(i in 1:dim(ideas)[1]){
-  ideas_scores[i,] <- pmin(ideas[i,-1][,-1],selected_client[,-1])
-}  
-
-# Adding a set of random experts to each challenge (no REPLACE)
-set.seed(3)
-selected_experts <- experts %>%
-  filter(Expert_ID==sample(experts$Expert_ID,expert_challenge_num))
-
-#Adding a set of random experts
-for(j in 1:expert_challenge_num){
-  for(i in 1:dim(ideas)[1])
-  ideas_scores[i,] <- ideas_scores[i,] + pmin(ideas[i,-1][,-1],selected_experts[j,-1])
-}
-
-colnames(selected_client)[1] <- "Agent_ID"
-colnames(selected_experts)[1] <- "Agent_ID"
-assessment_team <- selected_client%>%
-  union(selected_experts)
-
-kable(assessment_team) 
-
-# Making the average of calculated scores
-final_score <- rowMeans(ideas_scores[,-dim(ideas_scores)[2]])
-ideas_scores <- data.frame(ideas[,1:2],round(ideas_scores/(1+expert_challenge_num)),final_score)
-
-ideas_scores %>%
-  arrange(desc(final_score))%>%
-  kable()
-
-
+ideas_assessment <- assessIdea(ideas, clients, experts, expert_challenge_num)
 
 ```
-
--	phase 03 rewards the best idea and the owner of the best idea. 
-
-**TO DO:**
-
-*Under the assumption of adverse selection, the experts are allowed to evaluate only product dimensions and the client only business dimensions.*  
-
-*Under the assumption of near-knightian uncertainty, the business scores of the winning idea are transfered to the client, who learns about new business dimensions.*  
-
-*Under the assumption of creative-destruction, the scores of the winning idea are trasfered to all participants of the challenge, making it harder for the winner to win again with the same idea.*  
+  
   
 
 5	Discussions

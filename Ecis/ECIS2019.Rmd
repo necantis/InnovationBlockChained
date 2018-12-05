@@ -81,20 +81,20 @@ levels <- 100 # Setting the maximum skills per dimension
 expert_skill <- 50 #minimum skill of experts
 
 challenges_num <- 3 # iterations done
-idea_challenge_num <- 10 # max ideas per challenge
+idea_challenge_num <- 9 # max ideas per challenge
 expert_challenge_num <- 2 # experts per challenge
 
 reward <- 10 #reward per challenge
+
+# Since we use random numbers ...
+# ... the seed seeting assures the same results every time
+set.seed(1)
 
 ```
 Table 1 illustrates the results of an idea competition concerning how to reduce energy consumption in private households. For sake of simplicity, we will assume to obtain four ideas. 
 In the previous example, there were `r solvers_num` solvers that generated `r idea_challenge_num` ideas for `r challenges_num` idea challenge. 
 
 ```{r agents_Tables}
-# Since we use random numbers ...
-# ... the seed seeting assures the same results every time
-set.seed(1) 
-
 createAgents<- function(prefix_letter, agents_num, product_dim, market_dim, minSkill_1, minSkill_2, maxSkills, levels){
 
   #Creating a temporary matrix with product skills of the agent
@@ -264,7 +264,6 @@ for(i in 1:dim(ideas)[1]){
 # ideas_overall_scores$`Electronics business`<-as.numeric(ideas_overall_scores$`Electronics business`)
 
 # Adding a set of random experts to each challenge (no REPLACE)
-set.seed(3)
 selected_experts <- experts %>%
   filter(Expert_ID == sample(experts$Expert_ID,expert_challenge_num))
 
@@ -284,17 +283,22 @@ for(j in 1:expert_challenge_num){
 ideas_assessment <- ideas_overall_scores%>%
   group_by(Idea_ID)%>%
   summarise_all(mean)
-#  summarise(Engineering=round(mean(Engineering)),Finance=round(mean(Finance)), Construction=round(mean(Construction)), Electronics=round(mean(Electronics)))
 
-ideas_assessment <- as.integer(ideas_assessment[,-2])
+#Rounding up mean values and removing character column
+ideas_assessment <- ideas_assessment[,-2]%>%
+   mutate_at(vars(-Idea_ID), funs(round(.,0)))
+
+#Adding mean value of each row as score
 ideas_assessment$score <- round(rowMeans(ideas_assessment[,2:5]))
 
+#Sorting the winning idea
 ideas_assessment<- ideas_assessment%>%
   arrange(desc(score))
 
 ideas_assessment
 }
 
+set.seed(3)
 ideas_assessment <- assessIdea(ideas, clients, experts, expert_challenge_num)
 
 kable(ideas_assessment) 
@@ -313,7 +317,6 @@ winner_idea <- ideas$Idea_ID == head(ideas_assessment,1)$Idea_ID
 ideas[winner_idea,]$Prize <- ideas[winner_idea,]$Prize+ reward
 
 kable(ideas)
-
 
 ```
 
@@ -353,12 +356,12 @@ levels <- 100 # Setting the maximum skills per dimension
 expert_skill <- 50 #minimum skill of experts
 
 challenges_num <- 3 # iterations done
-idea_challenge_num <- 10 # max ideas per challenge
+idea_challenge_num <- 9 # max ideas per challenge
 expert_challenge_num <- 2 # experts per challenge
 
 reward <- 10 #reward per challenge
 ```
-
+Creating `r solvers_num` solvers, `r experts_num` experts and `r clients_num` clients.
 ```{r intial_setup}
 solvers <- data.frame(createAgents("S", solvers_num, product_dim, market_dim, 0, 0, levels, levels))  
 colnames(solvers)[1]<-"Solver_ID"
@@ -372,15 +375,60 @@ clients <- createAgents("C", clients_num, product_dim, market_dim, 0, expert_ski
 colnames(clients)[1]<-"Client_ID"
 clients <- data.frame(clients$Client_ID,clients)
 ```
-  
+Running `r challenges_num`idea challenge`r if(challenges_num>1){"s"}` and listing the winners.
 ```{r run_idea_challenges}
 
-ideas <- check_skills(solvers,idea_challenge_num, product_dim, market_dim, levels)
+ideas_overall <-NA
 
-ideas_assessment <- assessIdea(ideas, clients, experts, expert_challenge_num)
+for(i in 1:challenges_num){
+  #Generate ideas
+  ideas <- check_skills(solvers,idea_challenge_num, product_dim, market_dim, levels)
+  #Assess idea
+  ideas_assessment <- assessIdea(ideas, clients, experts, expert_challenge_num)
+  #Find winner
+  winner_idea <- ideas$Idea_ID == head(ideas_assessment,1)$Idea_ID
+  #Assign prize to idea
+  ideas$Prize <-0
+  ideas[winner_idea,]$Prize <- reward
+  
+  if(is.na(ideas_overall)){
+    ideas_overall <- data.frame("Challenge"=i,ideas)
+  }else{
+    ideas_overall <- union(ideas_overall,data.frame("Challenge"=i,ideas))
+  }
+}
+
+#rename Ideas with Unique Identifier
+ideas_overall$UID <- NA
+for(i in 1:dim(ideas_overall)[1]){
+  ideas_overall[i,]$UID <- paste(c("C",ideas_overall[i,]$Challenge,"I",ideas_overall[i,]$Idea_ID), collapse = "")
+}
+
+#Show winner of each challenge
+ideas_overall%>%
+  arrange(Challenge,Idea_ID)%>%
+  filter(Prize>0)%>%
+  kable()
 
 ```
-  
+```{r show_results}
+personal_scores <- ideas_overall%>%
+  group_by(Solver_ID)%>%
+  summarise_all(mean)
+
+personal_ideas <- ideas_overall%>%
+  group_by(Solver_ID)%>%
+  summarise(n())
+
+personal_prize <-ideas_overall%>%
+  aggregate()
+
+personal_scores <- personal_scores[,-dim(personal_scores)[2]][,-2][,-2]
+
+
+
+```
+
   
 
 5	Discussions

@@ -194,16 +194,15 @@ time, (9) in exchange of a mix between monetary and non-monetary rewards
 that are given by (10) a jury of experts. With respect to the process
 used to generate ideas, we refer to Faste et al. (2013), who compared
 classic brainstorming with two new solutions: (a) chainstorming, where
-participants have to use ideas from a previous brainstorming to solve a
-new problem and (b) cheatstorming, where participants cannot use new
-ideas and can only use ideas from previous brainstorming. Since
-performance of cheatstorming seems to outperform the other options, the
-authors suggested that idea generation is less about idea and more about
-dealing with cultural influence exerted by unconventional ideas on the
-ideating team. Therefore, tokenization could be used to list the ideas
-submitted and rewards those that are winning as well as those that are
-reused, as long as a way to regroup similar ideas in a decentralized
-fashion.
+solvers have to use ideas from a previous brainstorming to solve a new
+problem and (b) cheatstorming, where solvers cannot use new ideas and
+can only use ideas from previous brainstorming. Since performance of
+cheatstorming seems to outperform the other options, the authors
+suggested that idea generation is less about idea and more about dealing
+with cultural influence exerted by unconventional ideas on the ideating
+team. Therefore, tokenization could be used to list the ideas submitted
+and rewards those that are winning as well as those that are reused, as
+long as a way to regroup similar ideas in a decentralized fashion.
 
 \section{3 Methodology}\label{methodology}
 
@@ -222,23 +221,204 @@ etc.(Sun and Kantor 2006). Nonetheless, Pries-Heje, Baskerville, and
 Venable (2008; Venable, Pries-Heje, and Baskerville 2012) recommend to
 use this type of artificial evaluation as an ex-ante assessment of the
 system, before testing it on larger scale with real users (naturalistic
-evaluations).\\
+evaluations).
+
 In what follows we present our artefact in the shape of a method
 composed of four phases, as shown in figure 1, and we illustrate how it
 works by a simple example.
 
 Table 1 illustrates the results of an idea competition concerning how to
 reduce energy consumption in private households. For sake of simplicity,
-we will assume to obtain four ideas. Each idea receives a unique
-identification number, which is associated with the unique ID of the
-user (Step 1). Then, by means of automatic or manual classification, the
-ideas are assigned to clusters showing the ``stance'' of each idea: for
-example, ``behavioural'' vs. ``technical'' or ``engineering'' oriented
-idea (Step 2). For sake of discussion, we can also assume that a set of
-evaluators give a score between 1 and 9 for each idea according to three
-dimensions, which have different weights (D1 is 100, D2 is 10 and D3 is
-1). Finally, the first idea of each cluster is selected, the selected
-players (065, 177 and 356) win a prize and are invited for phase 2.\\
+we will assume to obtain four ideas. In the previous example, there were
+5 solvers that generated 9 ideas for 3 idea challenge.
+
+\begin{itemize}
+\tightlist
+\item
+  phase 00 starts by generating the three types of agents: (1) clients,
+  (2) experts and (3) challenge participants.
+\end{itemize}
+
+To create agents participating to the idea challenges (hereinafter
+referred to as \emph{solvers}), the system takes as initial parameters
+the whole set of possible market dimensions assessed by the client
+(\emph{market\_dim}=2), the whole set of possible market dimensions
+assessed by the client (\emph{product\_dim}=2), the maximum skill level
+per dimension (\emph{levels}=100), the number of solvers
+(\emph{solvers\_num}=5).
+
+\begin{tabular}{l|l|r|r|r|r}
+\hline
+Name & Solver\_ID & Engineering & Finance & Construction & Electronics\\
+\hline
+Arnold & S1 & 27 & 90 & 21 & 50\\
+\hline
+Boris & S2 & 37 & 94 & 18 & 72\\
+\hline
+Carla & S3 & 57 & 66 & 69 & 99\\
+\hline
+Damien & S4 & 91 & 63 & 38 & 38\\
+\hline
+Esteban & S5 & 20 & 6 & 77 & 78\\
+\hline
+\end{tabular}
+
+To create agents as experts, the system takes the overall number of
+experts (=5) and it sets the minimum skill for \emph{product} dimensions
+at 50/100.
+
+\begin{tabular}{l|l|r|r|r|r}
+\hline
+Name & Expert\_ID & Engineering & Finance & Construction & Electronics\\
+\hline
+Alice & E1 & 97 & 69 & 48 & 67\\
+\hline
+Bob & E2 & 61 & 51 & 60 & 79\\
+\hline
+Charlie & E3 & 83 & 69 & 49 & 11\\
+\hline
+Daniela & E4 & 56 & 93 & 19 & 72\\
+\hline
+Eric & E5 & 63 & 67 & 83 & 41\\
+\hline
+\end{tabular}
+
+To create agents as clients, the system uses the number of clients
+(\emph{clients\_num}=3), and it sets the minimum skill for
+\emph{business} dimensions at 50/100.
+
+\begin{tabular}{l|l|r|r|r|r}
+\hline
+Name & Client\_ID & Engineering & Finance & Construction & Electronics\\
+\hline
+Anais & C1 & 82 & 55 & 51 & 85\\
+\hline
+Bodgan & C2 & 65 & 53 & 74 & 74\\
+\hline
+Charles & C3 & 78 & 79 & 87 & 93\\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\tightlist
+\item
+  phase 01 creates an idea challenge by assigning ideas to a random pool
+  of solvers (one solver can have multiple ideas in the same idea
+  challenge).
+\end{itemize}
+
+\begin{tabular}{l|l|r|r|r|r|r}
+\hline
+Solver\_ID & Idea\_ID & Engineering & Finance & Construction & Electronics & Prize\\
+\hline
+S3 & I1 & 17 & 22 & 66 & 24 & 0\\
+\hline
+S2 & I2 & 17 & 79 & 8 & 10 & 0\\
+\hline
+S1 & I3 & 9 & 31 & 15 & 12 & 0\\
+\hline
+S1 & I4 & 18 & 30 & 8 & 3 & 0\\
+\hline
+S2 & I5 & 10 & 45 & 6 & 46 & 0\\
+\hline
+S3 & I6 & 27 & 59 & 52 & 87 & 0\\
+\hline
+S4 & I7 & 70 & 54 & 8 & 30 & 0\\
+\hline
+S3 & I8 & 5 & 26 & 49 & 79 & 0\\
+\hline
+S5 & I9 & 18 & 5 & 9 & 36 & 0\\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\tightlist
+\item
+  In phase 02, a client and 2 experts assess the ideas of the solvers.
+  Each agent (client or expert) can only appreciate an idea up to
+  his/her skill.\\
+  Hence, if P1 of an idea is 99 and the P1 of an agent is 9, the score
+  of the idea for P1 is 9.
+\end{itemize}
+
+\begin{tabular}{l|r|r|r|r|r|r}
+\hline
+Idea\_ID & Engineering & Finance & Construction & Electronics & Prize & score\\
+\hline
+I6 & 27 & 55 & 52 & 68 & NA & 50\\
+\hline
+I7 & 65 & 53 & 8 & 30 & NA & 39\\
+\hline
+I8 & 5 & 26 & 49 & 66 & NA & 36\\
+\hline
+I1 & 17 & 22 & 59 & 24 & NA & 30\\
+\hline
+I5 & 10 & 45 & 6 & 44 & NA & 26\\
+\hline
+I2 & 17 & 58 & 8 & 10 & NA & 23\\
+\hline
+I3 & 9 & 31 & 15 & 12 & NA & 17\\
+\hline
+I9 & 18 & 5 & 9 & 36 & NA & 17\\
+\hline
+I4 & 18 & 30 & 8 & 3 & NA & 15\\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\tightlist
+\item
+  phase 03 rewards the best idea with a prize of 10 points.
+\end{itemize}
+
+\begin{tabular}{l|l|r|r|r|r|r}
+\hline
+Solver\_ID & Idea\_ID & Engineering & Finance & Construction & Electronics & Prize\\
+\hline
+S3 & I1 & 17 & 22 & 66 & 24 & 0\\
+\hline
+S2 & I2 & 17 & 79 & 8 & 10 & 0\\
+\hline
+S1 & I3 & 9 & 31 & 15 & 12 & 0\\
+\hline
+S1 & I4 & 18 & 30 & 8 & 3 & 0\\
+\hline
+S2 & I5 & 10 & 45 & 6 & 46 & 0\\
+\hline
+S3 & I6 & 27 & 59 & 52 & 87 & 10\\
+\hline
+S4 & I7 & 70 & 54 & 8 & 30 & 0\\
+\hline
+S3 & I8 & 5 & 26 & 49 & 79 & 0\\
+\hline
+S5 & I9 & 18 & 5 & 9 & 36 & 0\\
+\hline
+\end{tabular}
+
+\textbf{TO DO:}
+
+\emph{Under the assumption of adverse selection, the experts are allowed
+to evaluate only product dimensions and the client only business
+dimensions.}
+
+\emph{Under the assumption of near-knightian uncertainty, the business
+scores of the winning idea are transfered to the client, who learns
+about new business dimensions.}
+
+\emph{Under the assumption of creative-destruction, the scores of the
+winning idea are trasfered to all solvers of the challenge, making it
+harder for the winner to win again with the same idea.}
+
+Each idea receives a unique identification number, which is associated
+with the unique ID of the user (Step 1). Then, by means of automatic or
+manual classification, the ideas are assigned to clusters showing the
+``stance'' of each idea: for example, ``behavioural'' vs. ``technical''
+or ``engineering'' oriented idea (Step 2). For sake of discussion, we
+can also assume that a set of evaluators give a score between 1 and 9
+for each idea according to three dimensions, which have different
+weights (D1 is 100, D2 is 10 and D3 is 1). Finally, the first idea of
+each cluster is selected, the selected players (065, 177 and 356) win a
+prize and are invited for phase 2.\\
 In the second phase, the players perform chainstorm and combine the
 ideas that passed phase 01, to produce new ideas. Table 2 shows the
 creation of two new ideas. In this step, the ideas are assessed by
@@ -290,102 +470,65 @@ decision-makers (agents), which interact through prescribed rules
 (Farmer and Foley 2009). Our code has four functions, corresponding to
 the following phases:
 
-\begin{itemize}
-\tightlist
-\item
-  phase 00 generates the agents and it assigns one or more ideas to each
-  agent. It takes as initial parameters the whole set of possible market
-  dimensions assessed by the client (=50), the whole set of possible
-  market dimensions assessed by the client (=50), the number of clients
-  (=50), the number of experts (=50), the number of agents (=50), the
-  maximum skill level per dimension (=100) and the number of challenges
-  (=100). In the previous example, the target was 10\^{}3, there were 3
-  agents that generated 4 ideas into 3 clusters in phase 01. Our
-  simulation uses 10\^{}9 as target, 10\^{}3 agents, 10\^{}4 ideas and
-  10 clusters.
-\end{itemize}
-
-\begin{verbatim}
-##   Agent_ID s_pro_01 s_pro_02 s_pro_03 s_mkt_01 s_mktt_02 s_mkt_03 money
-## 1        1        8        9        8        9        11        8     0
-## 2        2       10       12        8        8        15       11     0
-## 3        3        7        9        9        9         9       10     0
-## 4        4       11       12       11       12         7        5     0
-## 5        5       14       10        9       16         9       11     0
-## 6        6       12        7        8       13        12        7     0
-\end{verbatim}
-
-\begin{verbatim}
-##   Expert_ID s_pro_01 s_pro_02 s_pro_03 s_mkt_01 s_mktt_02 s_mkt_03 money
-## 1         1       51       36       49        8         9        6     0
-## 2         2       51       47       46       15         7       11     0
-## 3         3       43       50       38        7         3       13     0
-## 4         4       60       59       48        9        14        7     0
-## 5         5       54       54       54       10        11        5     0
-## 6         6       52       50       56       12        15        8     0
-\end{verbatim}
-
-\begin{verbatim}
-##   Client_ID s_pro_01 s_pro_02 s_pro_03 s_mkt_01 s_mktt_02 s_mkt_03 money
-## 1         1        7       12        7       51        48       45     0
-## 2         2        7        5        3       55        50       40     0
-## 3         3        7       12        5       43        63       45     0
-## 4         4        6       16       12       56        40       47     0
-## 5         5        7        6       14       51        53       51     0
-## 6         6       12        9        8       51        56       50     0
-\end{verbatim}
-
-\begin{itemize}
-\tightlist
-\item
-  phase 01 divides the ideas into clusters and retains one idea per
-  cluster. We shall compare the case when the winner for each cluster is
-  the first one (model A) or the one with the idea that has the greatest
-  value (model B).
-\item
-  phase 02 selects and combines the retained idea into the best idea
-  pool. This is a problem of linear programming that tries to maximizes
-  the sum of the ideas by defining that the coefficient of each idea is
-  binary (either we select it or not) and by setting one constraint (the
-  sum of the pooled idea cannot be greater than the target).
-\item
-  phase 03 assesses the average payoff of agents, by using the mean of
-  the individual payoff, and the payoff of the client, by calculating
-  the remainder between the target and the pooled ideas. For sake of
-  clarity, we shall compare the situation when the idea challenge has 1
-  stage and one cluster (Model 0), when we add a second stage performing
-  chainstorming (Model 1) and when we add a third stage performing
-  cheatstorming.
-\end{itemize}
-
-Table 3 illustrates the outcome of the simulations. The first model (M0)
-allows to obtain a good idea selected among 10\^{}4 ideas. That assures
-a good satisfaction for the client and a small cost in terms of prize
-for the only winner. Nonetheless, one can assume it would be fairly
-expensive to pay experts to evaluate the 10\^{}4 ideas and it would be
-quite disappointing for the agents to have 1 chance out of 10\^{}4 to
-win. Model 1a has 10 winners for the phase 01, that is one per cluster.
-One can assume that cluster definition could be done by an unsupervised
-algorithm for clustering based on textual description of the solution,
-so there will be no need to request expert evaluations. In the second
-stage, the ideas are pooled together and the outcome is below the one of
-the first model, and the agents to reward are 14 (10 in the first stage
-and 4 in the second stage). Nonetheless, the cost for idea assessment
-are significantly lower, since there are only 15 possible combinations
-to evaluate. This validates our first testable proposition (P1).
-Moreover, Model 1b appears evident why it would not be wise to select
-the best idea for every cluster. Indeed, it would take the same amount
-of assessment as the same model to obtain the same result (in the second
-phase, the agent with the best idea cannot find anyone that can improve
-it).
-
-Finally, model 2 has been conceived to illustrate that with a large set
-of agents it would be theoretically possible to receive a number of
-ideas to assess that is greater than the initial number, although it is
-unlikely to occur in reality. This validates our second testable
-proposition (P2) under the condition that the number of retained ideas
-in the second idea challenge is not too large (although, one could
-choose to solve this problem by using idea clustering again).
+\begin{tabular}{r|l|l|r|r|r|r|r|l}
+\hline
+Challenge & Solver\_ID & Idea\_ID & P1 & P2 & B1 & B2 & Prize & UID\\
+\hline
+1 & S5 & I1 & 22 & 51 & 26 & 3 & 10 & C1I1\\
+\hline
+1 & S3 & I2 & 18 & 26 & 1 & 10 & 0 & C1I2\\
+\hline
+1 & S2 & I3 & 46 & 35 & 83 & 23 & 0 & C1I3\\
+\hline
+1 & S1 & I4 & 18 & 9 & 47 & 78 & 0 & C1I4\\
+\hline
+1 & S2 & I5 & 22 & 10 & 19 & 7 & 0 & C1I5\\
+\hline
+1 & S5 & I6 & 3 & 42 & 35 & 4 & 0 & C1I6\\
+\hline
+1 & S1 & I7 & 25 & 44 & 36 & 28 & 0 & C1I7\\
+\hline
+1 & S5 & I8 & 22 & 42 & 64 & 2 & 0 & C1I8\\
+\hline
+1 & S1 & I9 & 30 & 38 & 1 & 61 & 0 & C1I9\\
+\hline
+2 & S4 & I1 & 2 & 42 & 3 & 1 & 0 & C2I1\\
+\hline
+2 & S4 & I2 & 2 & 42 & 5 & 1 & 0 & C2I2\\
+\hline
+2 & S2 & I3 & 55 & 13 & 29 & 9 & 0 & C2I3\\
+\hline
+2 & S1 & I4 & 23 & 35 & 12 & 61 & 0 & C2I4\\
+\hline
+2 & S3 & I5 & 49 & 22 & 69 & 20 & 0 & C2I5\\
+\hline
+2 & S1 & I6 & 22 & 37 & 30 & 76 & 10 & C2I6\\
+\hline
+2 & S2 & I7 & 13 & 26 & 9 & 7 & 0 & C2I7\\
+\hline
+2 & S2 & I8 & 28 & 55 & 10 & 17 & 0 & C2I8\\
+\hline
+2 & S1 & I9 & 24 & 19 & 32 & 75 & 0 & C2I9\\
+\hline
+3 & S1 & I1 & 32 & 32 & 11 & 11 & 0 & C3I1\\
+\hline
+3 & S5 & I2 & 15 & 26 & 40 & 5 & 0 & C3I2\\
+\hline
+3 & S2 & I3 & 22 & 7 & 17 & 9 & 0 & C3I3\\
+\hline
+3 & S4 & I4 & 11 & 30 & 3 & 1 & 0 & C3I4\\
+\hline
+3 & S2 & I5 & 45 & 57 & 14 & 24 & 10 & C3I5\\
+\hline
+3 & S1 & I6 & 25 & 11 & 6 & 29 & 0 & C3I6\\
+\hline
+3 & S1 & I7 & 29 & 31 & 14 & 50 & 0 & C3I7\\
+\hline
+3 & S3 & I8 & 11 & 34 & 28 & 16 & 0 & C3I8\\
+\hline
+3 & S1 & I9 & 26 & 45 & 48 & 35 & 0 & C3I9\\
+\hline
+\end{tabular}
 
 \section{5 Discussions}\label{discussions}
 
